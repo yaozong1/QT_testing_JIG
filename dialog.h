@@ -40,6 +40,11 @@ private slots:  //槽函数，遇到相应信号就触发
 
     void on_ble_clicked();
 
+
+    void on_textEdit_Recv_copyAvailable(bool b);
+
+    void on_textEdit_Recv_textChanged();
+
 private:
     Ui::Dialog *ui;
 

@@ -5,7 +5,7 @@
 #include <QList>
 #include <QDebug>
 #include <QTextEdit>
-
+#include <QProcess>
 
 Dialog::Dialog(QWidget *parent)
     : QDialog(parent)
@@ -32,6 +32,8 @@ Dialog::Dialog(QWidget *parent)
 
     //等待一个触发信号，接收串口数据
     connect(mSerialPort, SIGNAL(readyRead()), this, SLOT(on_SerialPort_readyRead()));
+
+
 }
 
 Dialog::~Dialog()
@@ -41,12 +43,21 @@ Dialog::~Dialog()
 
 bool Dialog::getSerialPortConfig()  //配置串口
 {
+
+
     //获取串口配置
+/*
     mPortName = ui->Cboxport->currentText();
     mBaudRate = ui->Cboxboudrate->currentText();
     mParity = ui->Cboxparity->currentText();
     mDataBits = ui->Cboxdatabits->currentText();
     mStopBits = ui->Cboxstopbits->currentText();
+*/
+    mPortName = ui->Cboxport->currentText();
+    mBaudRate = "115200";
+    mParity = "NONE" ;
+    mDataBits = "8" ;
+    mStopBits = "1";
 
     //设置串口
     //串口号
@@ -109,6 +120,7 @@ bool Dialog::getSerialPortConfig()  //配置串口
 }
 void Dialog::on_btn_open_clicked()  //打开关闭按钮状态
 {
+
     if(true == mIsOpen)
     {
         //当前已经打开了串口，点击后将按钮更新为关闭状态
@@ -117,12 +129,14 @@ void Dialog::on_btn_open_clicked()  //打开关闭按钮状态
         mIsOpen = false;
         //此时可以配置串口
         ui->Cboxport->setEnabled(true);
-        ui->Cboxboudrate->setEnabled(true);
-        ui->Cboxparity->setEnabled(true);
-        ui->Cboxdatabits->setEnabled(true);
-        ui->Cboxstopbits->setEnabled(true);
-        ui->btn_send->setEnabled(mIsOpen);
+    //    ui->Cboxboudrate->setEnabled(true);
+       // ui->Cboxparity->setEnabled(true);
+     //   ui->Cboxdatabits->setEnabled(true);
+    //    ui->Cboxstopbits->setEnabled(true);
+    //    ui->btn_send->setEnabled(mIsOpen);
         qDebug() << "关闭";
+        ui->textEdit_Recv-> setPlainText("正在进行测试当中.......请稍等........");
+
     }
     else
     {
@@ -134,11 +148,12 @@ void Dialog::on_btn_open_clicked()  //打开关闭按钮状态
             ui->btn_open->setText("关闭");
             qDebug() << "成功打开串口" << mPortName;
             ui->Cboxport->setEnabled(false);
-            ui->Cboxboudrate->setEnabled(false);
-            ui->Cboxparity->setEnabled(false);
-            ui->Cboxdatabits->setEnabled(false);
-            ui->Cboxstopbits->setEnabled(false);
+         //   ui->Cboxboudrate->setEnabled(false);
+        //    ui->Cboxparity->setEnabled(false);
+         //   ui->Cboxdatabits->setEnabled(false);
+         //   ui->Cboxstopbits->setEnabled(false);
             ui->btn_send->setEnabled(mIsOpen);
+            ui->textEdit_Recv-> setPlainText("正在进行测试当中.......请稍等........");
         }
 //        else
 //        {
@@ -190,6 +205,8 @@ void Dialog::on_SerialPort_readyRead()
 */
 
 int index_arr ;
+char* dataArray = new char[8];
+
 
 void Dialog::on_SerialPort_readyRead()
 {
@@ -199,7 +216,7 @@ void Dialog::on_SerialPort_readyRead()
         QByteArray recvData = mSerialPort->readAll();
 
         int dataSize = recvData.size();
-        char* dataArray = new char[8];
+
 
         // 逐个字节复制数据到数组中
         for (int i = 0; i < dataSize; i++) {
@@ -287,6 +304,23 @@ char Dialog::ConvertHexChar(char ch)
 
 void Dialog::on_btn_yellow_clicked()
 {
+
+    //这一段是JLINK 烧录的代码
+    QString program = "C:/Program Files (x86)/SEGGER/JLink/JLink.exe";
+    QString argument = "D:/ihex/command.txt";
+   // QProcess::startDetached(program, QStringList() << argument);
+
+    QProcess process;
+    process.start(program, QStringList() << argument);
+    process.waitForFinished();
+
+    QByteArray output = process.readAllStandardOutput();
+    QString outputString(output);
+    ui->textEdit_Recv-> append(outputString);
+    //包含cmd反馈的信息显示到窗口中
+
+
+
     QByteArray btn_data;
     btn_data[0] = 0x01;
     btn_data[1] = 0x0d;
@@ -302,6 +336,7 @@ void Dialog::on_btn_yellow_clicked()
         ui->btn_yellow->setText("打开");
             flag_yellow = false;
      }
+
 }
 
 void Dialog::on_btn_red_clicked()
@@ -348,4 +383,7 @@ void Dialog::on_ble_clicked()
 {
 ui->textEdit_Recv-> clear();
 }
+
+
+
 

@@ -16,8 +16,8 @@
   <widget class="QPushButton" name="btn_send">
    <property name="geometry">
     <rect>
-     <x>620</x>
-     <y>290</y>
+     <x>660</x>
+     <y>340</y>
      <width>93</width>
      <height>28</height>
     </rect>
@@ -32,10 +32,10 @@
   <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
-     <x>140</x>
-     <y>40</y>
-     <width>212</width>
-     <height>381</height>
+     <x>30</x>
+     <y>160</y>
+     <width>331</width>
+     <height>81</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -43,8 +43,16 @@
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
        <widget class="QLabel" name="label">
+        <property name="font">
+         <font>
+          <family>Myanmar Text</family>
+          <pointsize>14</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
         <property name="text">
-         <string>串口号</string>
+         <string> TEST _ JIG _ PORT</string>
         </property>
        </widget>
       </item>
@@ -53,158 +61,15 @@
       </item>
      </layout>
     </item>
-    <item>
-     <layout class="QHBoxLayout" name="horizontalLayout_2">
-      <property name="spacing">
-       <number>7</number>
-      </property>
-      <item>
-       <widget class="QLabel" name="label_2">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>12</pointsize>
-          <weight>75</weight>
-          <bold>true</bold>
-         </font>
-        </property>
-        <property name="text">
-         <string>波特率</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QComboBox" name="Cboxboudrate">
-        <item>
-         <property name="text">
-          <string>9600</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>115200</string>
-         </property>
-        </item>
-       </widget>
-      </item>
-     </layout>
-    </item>
-    <item>
-     <layout class="QHBoxLayout" name="horizontalLayout_3">
-      <item>
-       <widget class="QLabel" name="label_3">
-        <property name="text">
-         <string>校验位</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QComboBox" name="Cboxparity">
-        <item>
-         <property name="text">
-          <string>NONE</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>ODD</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>EVEN</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>MARK</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>SPACE</string>
-         </property>
-        </item>
-       </widget>
-      </item>
-     </layout>
-    </item>
-    <item>
-     <layout class="QHBoxLayout" name="horizontalLayout_4">
-      <item>
-       <widget class="QLabel" name="label_4">
-        <property name="text">
-         <string>数据位</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QComboBox" name="Cboxdatabits">
-        <item>
-         <property name="text">
-          <string>5</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>6</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>7</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>8</string>
-         </property>
-        </item>
-       </widget>
-      </item>
-     </layout>
-    </item>
-    <item>
-     <layout class="QHBoxLayout" name="horizontalLayout_5">
-      <item>
-       <widget class="QLabel" name="label_5">
-        <property name="text">
-         <string>停止位</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QComboBox" name="Cboxstopbits">
-        <item>
-         <property name="text">
-          <string>1</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>1.5</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>2</string>
-         </property>
-        </item>
-       </widget>
-      </item>
-     </layout>
-    </item>
    </layout>
   </widget>
   <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
-     <x>170</x>
-     <y>450</y>
-     <width>95</width>
-     <height>112</height>
+     <x>120</x>
+     <y>250</y>
+     <width>151</width>
+     <height>111</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -224,7 +89,7 @@
     <item>
      <widget class="QPushButton" name="btn_open">
       <property name="text">
-       <string>打开</string>
+       <string>开始测试</string>
       </property>
      </widget>
     </item>
@@ -246,8 +111,8 @@
   <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
-     <x>390</x>
-     <y>40</y>
+     <x>430</x>
+     <y>90</y>
      <width>321</width>
      <height>241</height>
     </rect>
@@ -298,6 +163,13 @@
      </spacer>
     </item>
     <item>
+     <widget class="QLabel" name="label_7">
+      <property name="text">
+       <string>发送区：</string>
+      </property>
+     </widget>
+    </item>
+    <item>
      <widget class="QTextEdit" name="textEdit_send">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -315,8 +187,8 @@
   <widget class="QLabel" name="label_6">
    <property name="geometry">
     <rect>
-     <x>330</x>
-     <y>50</y>
+     <x>430</x>
+     <y>70</y>
      <width>51</width>
      <height>16</height>
     </rect>
@@ -325,37 +197,11 @@
     <string>接收区：</string>
    </property>
   </widget>
-  <widget class="QLabel" name="label_7">
-   <property name="geometry">
-    <rect>
-     <x>330</x>
-     <y>200</y>
-     <width>51</width>
-     <height>16</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>发送区：</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="label_8">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>210</y>
-     <width>91</width>
-     <height>16</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>下位机控制：</string>
-   </property>
-  </widget>
   <widget class="QPushButton" name="btn_yellow">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>440</y>
+     <x>140</x>
+     <y>500</y>
      <width>93</width>
      <height>28</height>
     </rect>
@@ -364,14 +210,14 @@
     <string notr="true"/>
    </property>
    <property name="text">
-    <string>打开</string>
+    <string>--------</string>
    </property>
   </widget>
   <widget class="QPushButton" name="btn_red">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>530</y>
+     <x>140</x>
+     <y>450</y>
      <width>93</width>
      <height>28</height>
     </rect>
@@ -380,37 +226,33 @@
     <string>打开</string>
    </property>
   </widget>
-  <widget class="QLabel" name="label_9">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>420</y>
-     <width>68</width>
-     <height>15</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>黄色LED</string>
-   </property>
-  </widget>
   <widget class="QLabel" name="label_10">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>500</y>
+     <x>50</x>
+     <y>410</y>
      <width>68</width>
      <height>15</height>
     </rect>
    </property>
+   <property name="font">
+    <font>
+     <family>Comic Sans MS</family>
+     <pointsize>12</pointsize>
+     <weight>75</weight>
+     <italic>false</italic>
+     <bold>true</bold>
+    </font>
+   </property>
    <property name="text">
-    <string>红色LED</string>
+    <string>CANBUS</string>
    </property>
   </widget>
   <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
-     <x>440</x>
-     <y>490</y>
+     <x>470</x>
+     <y>470</y>
      <width>261</width>
      <height>81</height>
     </rect>
@@ -445,10 +287,10 @@
   <widget class="QPushButton" name="ble">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>290</y>
-     <width>80</width>
-     <height>20</height>
+     <x>140</x>
+     <y>400</y>
+     <width>91</width>
+     <height>31</height>
     </rect>
    </property>
    <property name="text">
@@ -458,9 +300,9 @@
   <widget class="QLabel" name="label_11">
    <property name="geometry">
     <rect>
-     <x>340</x>
-     <y>500</y>
-     <width>81</width>
+     <x>360</x>
+     <y>420</y>
+     <width>161</width>
      <height>51</height>
     </rect>
    </property>
@@ -471,7 +313,115 @@
     </font>
    </property>
    <property name="text">
-    <string>测试结果</string>
+    <string>TESTING RESULT</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_12">
+   <property name="geometry">
+    <rect>
+     <x>50</x>
+     <y>460</y>
+     <width>68</width>
+     <height>15</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Comic Sans MS</family>
+     <pointsize>12</pointsize>
+     <weight>75</weight>
+     <italic>false</italic>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>CANBUS</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_13">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>500</y>
+     <width>121</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Comic Sans MS</family>
+     <pointsize>12</pointsize>
+     <weight>75</weight>
+     <italic>false</italic>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>Burn Firmware</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_2">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>30</y>
+     <width>101</width>
+     <height>91</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">imagine url(D:\pic\TTC_NB.png);</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="pixmap">
+    <pixmap>../../../../../pic/TTC_NB.png</pixmap>
+   </property>
+   <property name="scaledContents">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_3">
+   <property name="geometry">
+    <rect>
+     <x>130</x>
+     <y>40</y>
+     <width>251</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Arial Black</family>
+     <pointsize>14</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>The Techno Creatives</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_4">
+   <property name="geometry">
+    <rect>
+     <x>180</x>
+     <y>70</y>
+     <width>251</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Rockwell</family>
+     <pointsize>16</pointsize>
+     <weight>50</weight>
+     <bold>false</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>Blue Testing Platform</string>
    </property>
   </widget>
  </widget>
