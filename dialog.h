@@ -25,7 +25,6 @@ public:
 private slots:  //槽函数，遇到相应信号就触发
     void on_btn_open_clicked();
 
-    void on_btn_send_clicked();
 
     void on_SerialPort_readyRead();
 
@@ -34,16 +33,39 @@ private slots:  //槽函数，遇到相应信号就触发
 
     void on_btn_yellow_clicked();
 
-    void on_btn_red_clicked();
-
     void on_btn_bee_clicked();
 
     void on_ble_clicked();
 
+    void on_btn_sim_clicked();
 
-    void on_textEdit_Recv_copyAvailable(bool b);
+    void on_btn_gsm_clicked();
 
-    void on_textEdit_Recv_textChanged();
+    void on_btn_ms_clicked();
+
+    void on_btn_qspi_clicked();
+
+    void on_btn_can_clicked();
+
+    void on_btn_modem_clicked();
+
+    void on_btn_12v_in_clicked();
+
+    void on_btn_12v_outside_clicked();
+
+    void on_btn_4V_DCDC_clicked();
+
+    void on_btn_4V_IN_clicked();
+
+    void on_btn_ILB_clicked();
+
+    void on_btn_3v3_SEN_clicked();
+
+    void on_btn_3v3_CAN_clicked();
+
+    void on_btn_3v3_ANT_clicked();
+
+    void on_btn_OV_clicked();
 
 private:
     Ui::Dialog *ui;

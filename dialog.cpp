@@ -20,7 +20,7 @@ Dialog::Dialog(QWidget *parent)
     flag_red = false;
     flag_yellow = false;
     flag_bee = false;
-    ui->btn_send->setEnabled(mIsOpen);
+    //ui->btn_send->setEnabled(mIsOpen);
 
     //识别系统的所有可用串口号，并添加到下拉列表中
     QList<QSerialPortInfo> serialPortInfo = QSerialPortInfo::availablePorts();
@@ -125,17 +125,17 @@ void Dialog::on_btn_open_clicked()  //打开关闭按钮状态
     {
         //当前已经打开了串口，点击后将按钮更新为关闭状态
         mSerialPort->close();
-        ui->btn_open->setText("打开");
+        ui->btn_open->setText("连接设备");
         mIsOpen = false;
         //此时可以配置串口
         ui->Cboxport->setEnabled(true);
     //    ui->Cboxboudrate->setEnabled(true);
-       // ui->Cboxparity->setEnabled(true);
-     //   ui->Cboxdatabits->setEnabled(true);
+    //    ui->Cboxparity->setEnabled(true);
+    //    ui->Cboxdatabits->setEnabled(true);
     //    ui->Cboxstopbits->setEnabled(true);
     //    ui->btn_send->setEnabled(mIsOpen);
         qDebug() << "关闭";
-        ui->textEdit_Recv-> setPlainText("正在进行测试当中.......请稍等........");
+     //   ui->textEdit_Recv-> setPlainText("正在进行测试当中.......请稍等........");
 
     }
     else
@@ -145,45 +145,26 @@ void Dialog::on_btn_open_clicked()  //打开关闭按钮状态
         if(true == getSerialPortConfig())
         {
             mIsOpen = true;
-            ui->btn_open->setText("关闭");
+            ui->btn_open->setText("断开设备");
             qDebug() << "成功打开串口" << mPortName;
             ui->Cboxport->setEnabled(false);
          //   ui->Cboxboudrate->setEnabled(false);
-        //    ui->Cboxparity->setEnabled(false);
+         //   ui->Cboxparity->setEnabled(false);
          //   ui->Cboxdatabits->setEnabled(false);
          //   ui->Cboxstopbits->setEnabled(false);
-            ui->btn_send->setEnabled(mIsOpen);
-            ui->textEdit_Recv-> setPlainText("正在进行测试当中.......请稍等........");
+         //   ui->btn_send->setEnabled(mIsOpen);
+            ui->textEdit_Recv-> setPlainText("设备连接成功，等待进行测试......");
         }
-//        else
-//        {
-//            mIsOpen = false;
-//        }
+
+
+
+//                 else
+//                    {
+//                     mIsOpen = false;
+//                    }
     }
 }
 
-void Dialog::on_btn_send_clicked() //发送按钮
-{
-    if(true == mIsOpen)
-    {
-        //mSerialPort->write(ui->textEdit_send->toPlainText().toLatin1());// toPlainText(将文本编辑的文本转换为纯文本)
-        //mSerialPort->write(ui->textEdit_send->toPlainText().toStdString().c_str());
-        //注意：write函数的传递参数是QString，先转换为C++标准的string，再转为char型
-        QString str = ui->textEdit_send->toPlainText();
-        int len = str.length();
-        if(len%2 == 1)
-        {
-            str = str.insert(len - 1, '0');
-        }
-        QByteArray senddata;  //写入编辑框的数据
-        StringToHex(str,senddata);
-
-        int length = senddata.length();  //在帧尾追加STM32的关键帧
-        senddata[length + 1] = 0x0d;
-        senddata[length + 2] = 0x0a;
-        mSerialPort->write(senddata);
-    }
-}
 
 
 /*
@@ -204,7 +185,7 @@ void Dialog::on_SerialPort_readyRead()
 }
 */
 
-int index_arr ;
+int index_arr = 0;
 char* dataArray = new char[8];
 
 
@@ -213,18 +194,19 @@ void Dialog::on_SerialPort_readyRead()
 
     if (true == mIsOpen)
     {
-        QByteArray recvData = mSerialPort->readAll();
+          QByteArray recvData = mSerialPort->readAll();
 
-        int dataSize = recvData.size();
+          int dataSize = recvData.size();
 
 
         // 逐个字节复制数据到数组中
-        for (int i = 0; i < dataSize; i++) {
+           for (int i = 0; i < dataSize; i++) {//要从1开始，因为recvData.at(i)这个函数是从1开始的，而数组从0开始
             dataArray[index_arr] = recvData.at(i);
             qDebug() << dataArray[index_arr];
 
-
-            if ( QString(dataArray[index_arr]) == "A" )
+       if(QString (dataArray[0]) == "B") //功能性判断开始，设置开始服务符号为"B"，hex为42
+       {
+            if ( QString(dataArray[index_arr]) == "A" )//会按照总的结束符为A:41来进行设计，头一个数据作为标识符，最后一个数据作为结束符
             {
                 index_arr= 0 ;//设置16进制结束符号为A,hex对应值是41.
                 QPushButton* bbutton = ui->btn_bee; // Replace "myButton" with the object name of your QPushButton
@@ -233,8 +215,76 @@ void Dialog::on_SerialPort_readyRead()
 
             }
 
+            if ( QString(dataArray[1]) == "P" )
+            {
 
-            index_arr++;
+                QPushButton* bbutton = ui->btn_modem; // Replace "myButton" with the object name of your QPushButton
+                bbutton->setStyleSheet("background-color: green; color: white;");
+                ui->btn_modem->setText("PASS");
+            }
+
+            if ( QString(dataArray[2]) == "P" )
+            {
+
+                QPushButton* bbutton = ui->btn_sim; // Replace "myButton" with the object name of your QPushButton
+                bbutton->setStyleSheet("background-color: green; color: white;");
+                ui->btn_sim->setText("PASS");
+            }
+
+            if ( QString(dataArray[3]) == "P" )
+            {
+
+                QPushButton* bbutton = ui->btn_gsm; // Replace "myButton" with the object name of your QPushButton
+                bbutton->setStyleSheet("background-color: green; color: white;");
+                ui->btn_gsm->setText("PASS");
+            }
+
+            if ( QString(dataArray[4]) == "P" )
+            {
+
+                QPushButton* bbutton = ui->btn_ms; // Replace "myButton" with the object name of your QPushButton
+                bbutton->setStyleSheet("background-color: green; color: white;");
+                ui->btn_ms->setText("PASS");
+            }
+
+            if ( QString(dataArray[5]) == "P" )
+            {
+
+                QPushButton* bbutton = ui->btn_qspi; // Replace "myButton" with the object name of your QPushButton
+                bbutton->setStyleSheet("background-color: green; color: white;");
+                ui->btn_qspi->setText("PASS");
+            }
+
+            if ( QString(dataArray[6]) == "P" )
+            {
+
+                QPushButton* bbutton = ui->btn_can; // Replace "myButton" with the object name of your QPushButton
+                bbutton->setStyleSheet("background-color: green; color: white;");
+                ui->btn_can->setText("PASS");
+            }
+       }//功能性测试判断结束
+
+            if(QString (dataArray[0]) == "C") //电压判断开始，设置开始服务符号为"C"，hex为43
+       {
+            float voltage_pin = dataArray[1]/100.00 *  3.3;
+            ui->btn_12v_in->setText(QString::number(voltage_pin));
+            QPushButton* bbutton = ui->btn_12v_in; // Replace "myButton" with the object name of your QPushButton
+            if (voltage_pin >= 2)
+            bbutton->setStyleSheet("background-color: green; color: white;");
+            else
+            bbutton->setStyleSheet("background-color: red; color: white;");
+
+
+
+
+
+
+
+        }
+
+
+
+            index_arr++;//正常迭代
 
 
             if (index_arr > 7)
@@ -249,7 +299,7 @@ void Dialog::on_SerialPort_readyRead()
         ui->textEdit_Recv-> setPlainText(text);
 
         qDebug() << "正在接收数据";
-        ui->textEdit_Recv-> setPlainText("正在进行测试当中。。。。。");
+        ui->textEdit_Recv-> setPlainText("DONE");
  //       qDebug() << dataArray[0];
     }
 }
@@ -305,22 +355,6 @@ char Dialog::ConvertHexChar(char ch)
 void Dialog::on_btn_yellow_clicked()
 {
 
-    //这一段是JLINK 烧录的代码
-    QString program = "C:/Program Files (x86)/SEGGER/JLink/JLink.exe";
-    QString argument = "D:/ihex/command.txt";
-   // QProcess::startDetached(program, QStringList() << argument);
-
-    QProcess process;
-    process.start(program, QStringList() << argument);
-    process.waitForFinished();
-
-    QByteArray output = process.readAllStandardOutput();
-    QString outputString(output);
-    ui->textEdit_Recv-> append(outputString);
-    //包含cmd反馈的信息显示到窗口中
-
-
-
     QByteArray btn_data;
     btn_data[0] = 0x01;
     btn_data[1] = 0x0d;
@@ -339,24 +373,7 @@ void Dialog::on_btn_yellow_clicked()
 
 }
 
-void Dialog::on_btn_red_clicked()
-{
-    QByteArray btn_data;
-    btn_data[0] = 0x00;
-    btn_data[1] = 0x0d;
-    btn_data[2] = 0x0a;
-    mSerialPort->write(btn_data);
-    if(flag_red == false)
-     {
-        ui->btn_red->setText("关闭");
-            flag_red = true;
-     }
-    else
-     {
-        ui->btn_red->setText("打开");
-            flag_red = false;
-     }
-}
+
 
 void Dialog::on_btn_bee_clicked()
 {
@@ -381,9 +398,137 @@ void Dialog::on_btn_bee_clicked()
 
 void Dialog::on_ble_clicked()
 {
-ui->textEdit_Recv-> clear();
+  ui->textEdit_Recv-> clear();
+
+  //这一段是JLINK 烧录的代码
+  QString program = "C:/Program Files (x86)/SEGGER/JLink/JLink.exe";
+  QString argument = "D:/ihex/command.txt";
+ // QProcess::startDetached(program, QStringList() << argument);
+
+  QProcess process;
+  process.start(program, QStringList() << argument);
+  process.waitForFinished();
+/*
+  QByteArray output = process.readAllStandardOutput();
+  QString outputString(output);
+  ui->textEdit_Recv-> append(outputString);
+  //包含cmd反馈的信息显示到窗口中
+
+  ui->textEdit_Recv-> clear();
+*/ //暂时不添加jlink反馈信息
+  QByteArray start_data; //for arduino to recognize to start point
+  start_data[0] = 0x00;
+  start_data[1] = 0x0d;
+  start_data[2] = 0x0a;
+  mSerialPort->write(start_data);
+
+  ui->textEdit_Recv-> setPlainText("正在测试，等待台架返回测试结果");
+
+
 }
 
 
 
 
+
+
+
+void Dialog::on_btn_sim_clicked()
+{
+
+}
+
+
+void Dialog::on_btn_gsm_clicked()
+{
+
+}
+
+
+void Dialog::on_btn_ms_clicked()
+{
+
+}
+
+
+void Dialog::on_btn_qspi_clicked()
+{
+
+}
+
+
+void Dialog::on_btn_can_clicked()
+{
+
+}
+
+
+void Dialog::on_btn_modem_clicked()
+{
+
+}
+
+
+
+void Dialog::on_btn_12v_in_clicked()
+{
+
+}
+
+
+void Dialog::on_btn_12v_outside_clicked()
+{
+
+}
+
+
+
+
+void Dialog::on_btn_4V_DCDC_clicked()
+{
+
+}
+
+
+void Dialog::on_btn_4V_IN_clicked()
+{
+
+}
+
+
+
+
+void Dialog::on_btn_ILB_clicked()
+{
+
+}
+
+
+void Dialog::on_btn_3v3_SEN_clicked()
+{
+
+}
+
+
+void Dialog::on_btn_3v3_CAN_clicked()
+{
+
+}
+
+
+void Dialog::on_btn_3v3_ANT_clicked()
+{
+
+}
+
+
+void Dialog::on_btn_OV_clicked()
+{
+
+
+}
+
+void Serial_data_operate(int Hex_serial)
+{
+
+}
