@@ -67,6 +67,8 @@ private slots:  //槽函数，遇到相应信号就触发
 
     void on_btn_OV_clicked();
 
+    void Serial_data_operate(char *data, int length);
+
 private:
     Ui::Dialog *ui;
 

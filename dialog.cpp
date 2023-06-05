@@ -134,6 +134,7 @@ void Dialog::on_btn_open_clicked()  //打开关闭按钮状态
     //    ui->Cboxdatabits->setEnabled(true);
     //    ui->Cboxstopbits->setEnabled(true);
     //    ui->btn_send->setEnabled(mIsOpen);
+        ui->textEdit_Recv-> setPlainText("");
         qDebug() << "关闭";
      //   ui->textEdit_Recv-> setPlainText("正在进行测试当中.......请稍等........");
 
@@ -264,21 +265,20 @@ void Dialog::on_SerialPort_readyRead()
             }
        }//功能性测试判断结束
 
-            if(QString (dataArray[0]) == "C") //电压判断开始，设置开始服务符号为"C"，hex为43
+            if(QString (dataArray[0]) == "A") //电压判断开始，设置开始服务符号为"C"，hex为43
        {
-            float voltage_pin = dataArray[1]/100.00 *  3.3;
+
+            quint16 voltage_test = (dataArray[1] << 8 )| dataArray[2] ;
+
+            float voltage_pin = voltage_test/32767.0000 * 10;
+            qDebug() << "合并后的值xxxx为: " << voltage_test; // 打印合并后的值
+            qDebug() << "合并后的值tttt为: " << voltage_pin; // 打印合并后的值
             ui->btn_12v_in->setText(QString::number(voltage_pin));
             QPushButton* bbutton = ui->btn_12v_in; // Replace "myButton" with the object name of your QPushButton
             if (voltage_pin >= 2)
             bbutton->setStyleSheet("background-color: green; color: white;");
             else
             bbutton->setStyleSheet("background-color: red; color: white;");
-
-
-
-
-
-
 
         }
 
@@ -288,7 +288,11 @@ void Dialog::on_SerialPort_readyRead()
 
 
             if (index_arr > 7)
+                {
+
+                Dialog::Serial_data_operate(dataArray, index_arr);
                 index_arr = 0 ;
+                }
           }
 
 
@@ -299,6 +303,7 @@ void Dialog::on_SerialPort_readyRead()
         ui->textEdit_Recv-> setPlainText(text);
 
         qDebug() << "正在接收数据";
+        if(QString (dataArray[7]) == "S") //设置停止服务符号为"S"，hex为53
         ui->textEdit_Recv-> setPlainText("DONE");
  //       qDebug() << dataArray[0];
     }
@@ -362,12 +367,12 @@ void Dialog::on_btn_yellow_clicked()
     mSerialPort->write(btn_data);
     if(false == flag_yellow)
      {
-        ui->btn_yellow->setText("关闭");
+        ui->btn_yellow->setText("REQUESTING");
             flag_yellow = true;
      }
      else
      {
-        ui->btn_yellow->setText("打开");
+        ui->btn_yellow->setText("REQUEST");
             flag_yellow = false;
      }
 
@@ -528,7 +533,11 @@ void Dialog::on_btn_OV_clicked()
 
 }
 
-void Serial_data_operate(int Hex_serial)
+void Dialog::Serial_data_operate(char *data, int length)
 {
-
+    for (int i = 0; i < length; i++)
+    {
+        // 在这里对每个元素执行操作
+        qDebug() << "loop里面的数值为: " << data[i];
+    }
 }

@@ -239,11 +239,17 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="ble">
+       <widget class="QPushButton" name="btn_yellow">
+        <property name="baseSize">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
         <property name="font">
          <font>
           <family>Arial Black</family>
-          <pointsize>12</pointsize>
+          <pointsize>11</pointsize>
           <weight>75</weight>
           <bold>true</bold>
          </font>
@@ -252,7 +258,7 @@
          <string notr="true">background-color: #919297; color: black;</string>
         </property>
         <property name="text">
-         <string>START</string>
+         <string>RESQUEST</string>
         </property>
        </widget>
       </item>
@@ -286,17 +292,11 @@
      <number>1</number>
     </property>
     <item>
-     <widget class="QPushButton" name="btn_yellow">
-      <property name="baseSize">
-       <size>
-        <width>0</width>
-        <height>0</height>
-       </size>
-      </property>
+     <widget class="QPushButton" name="ble">
       <property name="font">
        <font>
         <family>Arial Black</family>
-        <pointsize>10</pointsize>
+        <pointsize>12</pointsize>
         <weight>75</weight>
         <bold>true</bold>
        </font>
@@ -305,7 +305,7 @@
        <string notr="true">background-color: #919297; color: black;</string>
       </property>
       <property name="text">
-       <string>LOAD FIRMWARE</string>
+       <string>START</string>
       </property>
      </widget>
     </item>
