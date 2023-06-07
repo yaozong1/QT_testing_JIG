@@ -607,10 +607,10 @@
        <widget class="QPushButton" name="btn_12v_outside">
         <property name="font">
          <font>
-          <family>Arial Black</family>
-          <pointsize>8</pointsize>
-          <weight>75</weight>
-          <bold>true</bold>
+          <family>Arial</family>
+          <pointsize>10</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
          </font>
         </property>
         <property name="styleSheet">
@@ -620,7 +620,7 @@
          <set>Qt::ImhNone</set>
         </property>
         <property name="text">
-         <string/>
+         <string>TBD</string>
         </property>
        </widget>
       </item>
@@ -698,10 +698,10 @@
        <widget class="QPushButton" name="btn_4V_DCDC">
         <property name="font">
          <font>
-          <family>Arial Black</family>
-          <pointsize>8</pointsize>
-          <weight>75</weight>
-          <bold>true</bold>
+          <family>Arial</family>
+          <pointsize>10</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
          </font>
         </property>
         <property name="styleSheet">
@@ -742,10 +742,10 @@
        <widget class="QPushButton" name="btn_4V_IN">
         <property name="font">
          <font>
-          <family>Arial Black</family>
-          <pointsize>8</pointsize>
-          <weight>75</weight>
-          <bold>true</bold>
+          <family>Arial</family>
+          <pointsize>10</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
          </font>
         </property>
         <property name="styleSheet">
@@ -786,10 +786,10 @@
        <widget class="QPushButton" name="btn_ILB">
         <property name="font">
          <font>
-          <family>Arial Black</family>
-          <pointsize>8</pointsize>
-          <weight>75</weight>
-          <bold>true</bold>
+          <family>Arial</family>
+          <pointsize>10</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
          </font>
         </property>
         <property name="styleSheet">
@@ -830,10 +830,10 @@
        <widget class="QPushButton" name="btn_3v3_SEN">
         <property name="font">
          <font>
-          <family>Arial Black</family>
-          <pointsize>8</pointsize>
-          <weight>75</weight>
-          <bold>true</bold>
+          <family>Arial</family>
+          <pointsize>10</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
          </font>
         </property>
         <property name="styleSheet">
@@ -874,10 +874,10 @@
        <widget class="QPushButton" name="btn_3v3_CAN">
         <property name="font">
          <font>
-          <family>Arial Black</family>
-          <pointsize>8</pointsize>
-          <weight>75</weight>
-          <bold>true</bold>
+          <family>Arial</family>
+          <pointsize>10</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
          </font>
         </property>
         <property name="styleSheet">
@@ -918,10 +918,10 @@
        <widget class="QPushButton" name="btn_3v3_ANT">
         <property name="font">
          <font>
-          <family>Arial Black</family>
-          <pointsize>8</pointsize>
-          <weight>75</weight>
-          <bold>true</bold>
+          <family>Arial</family>
+          <pointsize>10</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
          </font>
         </property>
         <property name="styleSheet">
@@ -962,8 +962,8 @@
        <widget class="QPushButton" name="btn_OV">
         <property name="maximumSize">
          <size>
-          <width>126</width>
-          <height>41</height>
+          <width>134</width>
+          <height>26</height>
          </size>
         </property>
         <property name="baseSize">
@@ -974,17 +974,17 @@
         </property>
         <property name="font">
          <font>
-          <family>Arial Black</family>
+          <family>Arial</family>
           <pointsize>10</pointsize>
-          <weight>75</weight>
-          <bold>true</bold>
+          <weight>50</weight>
+          <bold>false</bold>
          </font>
         </property>
         <property name="styleSheet">
          <string notr="true"/>
         </property>
         <property name="text">
-         <string/>
+         <string>TBD</string>
         </property>
         <property name="iconSize">
          <size>
@@ -993,7 +993,7 @@
          </size>
         </property>
         <property name="autoRepeatDelay">
-         <number>291</number>
+         <number>292</number>
         </property>
         <property name="autoRepeatInterval">
          <number>101</number>

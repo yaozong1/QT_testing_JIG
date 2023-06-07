@@ -187,7 +187,7 @@ void Dialog::on_SerialPort_readyRead()
 */
 
 int index_arr = 0;
-char* dataArray = new char[8];
+char* dataArray = new char[20];
 
 
 void Dialog::on_SerialPort_readyRead()
@@ -205,66 +205,8 @@ void Dialog::on_SerialPort_readyRead()
             dataArray[index_arr] = recvData.at(i);
             qDebug() << dataArray[index_arr];
 
-       if(QString (dataArray[0]) == "B") //功能性判断开始，设置开始服务符号为"B"，hex为42
-       {
-            if ( QString(dataArray[index_arr]) == "A" )//会按照总的结束符为A:41来进行设计，头一个数据作为标识符，最后一个数据作为结束符
-            {
-                index_arr= 0 ;//设置16进制结束符号为A,hex对应值是41.
-                QPushButton* bbutton = ui->btn_bee; // Replace "myButton" with the object name of your QPushButton
-                bbutton->setStyleSheet("background-color: green; color: white;");
-                ui->btn_bee->setText("PASS");
 
-            }
-
-            if ( QString(dataArray[1]) == "P" )
-            {
-
-                QPushButton* bbutton = ui->btn_modem; // Replace "myButton" with the object name of your QPushButton
-                bbutton->setStyleSheet("background-color: green; color: white;");
-                ui->btn_modem->setText("PASS");
-            }
-
-            if ( QString(dataArray[2]) == "P" )
-            {
-
-                QPushButton* bbutton = ui->btn_sim; // Replace "myButton" with the object name of your QPushButton
-                bbutton->setStyleSheet("background-color: green; color: white;");
-                ui->btn_sim->setText("PASS");
-            }
-
-            if ( QString(dataArray[3]) == "P" )
-            {
-
-                QPushButton* bbutton = ui->btn_gsm; // Replace "myButton" with the object name of your QPushButton
-                bbutton->setStyleSheet("background-color: green; color: white;");
-                ui->btn_gsm->setText("PASS");
-            }
-
-            if ( QString(dataArray[4]) == "P" )
-            {
-
-                QPushButton* bbutton = ui->btn_ms; // Replace "myButton" with the object name of your QPushButton
-                bbutton->setStyleSheet("background-color: green; color: white;");
-                ui->btn_ms->setText("PASS");
-            }
-
-            if ( QString(dataArray[5]) == "P" )
-            {
-
-                QPushButton* bbutton = ui->btn_qspi; // Replace "myButton" with the object name of your QPushButton
-                bbutton->setStyleSheet("background-color: green; color: white;");
-                ui->btn_qspi->setText("PASS");
-            }
-
-            if ( QString(dataArray[6]) == "P" )
-            {
-
-                QPushButton* bbutton = ui->btn_can; // Replace "myButton" with the object name of your QPushButton
-                bbutton->setStyleSheet("background-color: green; color: white;");
-                ui->btn_can->setText("PASS");
-            }
-       }//功能性测试判断结束
-
+/*
             if(QString (dataArray[0]) == "A") //电压判断开始，设置开始服务符号为"C"，hex为43
        {
 
@@ -281,13 +223,13 @@ void Dialog::on_SerialPort_readyRead()
             bbutton->setStyleSheet("background-color: red; color: white;");
 
         }
-
+*/
 
 
             index_arr++;//正常迭代
 
 
-            if (index_arr > 7)
+            if (index_arr > 19)
                 {
 
                 Dialog::Serial_data_operate(dataArray, index_arr);
@@ -360,13 +302,14 @@ char Dialog::ConvertHexChar(char ch)
 void Dialog::on_btn_yellow_clicked()
 {
 
-    QByteArray btn_data;
-    btn_data[0] = 0x01;
-    btn_data[1] = 0x0d;
-    btn_data[2] = 0x0a;
-    mSerialPort->write(btn_data);
+
     if(false == flag_yellow)
      {
+        QByteArray btn_data;
+        btn_data[0] = 0x01;
+        btn_data[1] = 0x0d;
+        btn_data[2] = 0x0a;
+        mSerialPort->write(btn_data);
         ui->btn_yellow->setText("REQUESTING");
             flag_yellow = true;
      }
@@ -533,11 +476,155 @@ void Dialog::on_btn_OV_clicked()
 
 }
 
+
+
 void Dialog::Serial_data_operate(char *data, int length)
 {
-    for (int i = 0; i < length; i++)
-    {
-        // 在这里对每个元素执行操作
-        qDebug() << "loop里面的数值为: " << data[i];
+    qDebug() << "进来啦11";
+    if(QString (data[0]) == "A" && QString (data[length-1]) == "S")
+  {
+//for EBL
+        qDebug() << "进来啦22";
+        quint16 voltage_test = (data[1] << 8 )| dataArray[2] ;
+        float voltage_pin = voltage_test/32767.0000 * 10;
+        ui->btn_12v_in->setText(QString::number(voltage_pin));
+        QPushButton* bbutton = ui->btn_12v_in; // Replace "myButton" with the object name of your QPushButton
+        if (voltage_pin >= 2)
+        bbutton->setStyleSheet("background-color: green; color: white;");
+        else
+        bbutton->setStyleSheet("background-color: red; color: white;");
+
+//For 4V_DCDC
+         voltage_test = (data[3] << 8 )| dataArray[4] ;
+         voltage_pin = voltage_test/32767.0000 * 10;
+        // qDebug() << data[3];
+         ui->btn_4V_DCDC->setText(QString::number(voltage_pin));
+         bbutton = ui->btn_4V_DCDC; // Replace "myButton" with the object name of your QPushButton
+        if (voltage_pin >= 3)
+        bbutton->setStyleSheet("background-color: green; color: white;");
+        else
+        bbutton->setStyleSheet("background-color: red; color: white;");
+
+//For 4V_IN
+        voltage_test = (data[5] << 8 )| dataArray[6] ;
+        voltage_pin = voltage_test/32767.0000 * 10;
+        // qDebug() << data[3];
+        ui->btn_4V_IN->setText(QString::number(voltage_pin));
+        bbutton = ui->btn_4V_IN; // Replace "myButton" with the object name of your QPushButton
+        if (voltage_pin >= 3)
+        bbutton->setStyleSheet("background-color: green; color: white;");
+        else
+        bbutton->setStyleSheet("background-color: red; color: white;");
+
+//For ILB
+        voltage_test = (data[7] << 8 )| dataArray[8] ;
+        voltage_pin = voltage_test/32767.0000 * 10;
+        // qDebug() << data[3];
+        ui->btn_ILB->setText(QString::number(voltage_pin));
+        bbutton = ui->btn_ILB; // Replace "myButton" with the object name of your QPushButton
+        if (voltage_pin >= 3)
+          bbutton->setStyleSheet("background-color: green; color: white;");
+        else
+          bbutton->setStyleSheet("background-color: red; color: white;");
+
+//For 3v3_SEN
+                voltage_test = (data[9] << 8 )| dataArray[10] ;
+                voltage_pin = voltage_test/32767.0000 * 10;
+                // qDebug() << data[3];
+                ui->btn_3v3_SEN->setText(QString::number(voltage_pin));
+                bbutton = ui->btn_3v3_SEN; // Replace "myButton" with the object name of your QPushButton
+                if (voltage_pin >= 3)
+                  bbutton->setStyleSheet("background-color: green; color: white;");
+                else
+                  bbutton->setStyleSheet("background-color: red; color: white;");
+
+
+//For 3v3_CAN
+         voltage_test = (data[11] << 8 )| dataArray[12] ;
+         voltage_pin = voltage_test/32767.0000 * 10;
+         // qDebug() << data[3];
+         ui->btn_3v3_CAN->setText(QString::number(voltage_pin));
+         bbutton = ui->btn_3v3_CAN; // Replace "myButton" with the object name of your QPushButton
+         if (voltage_pin >= 3)
+         bbutton->setStyleSheet("background-color: green; color: white;");
+         else
+         bbutton->setStyleSheet("background-color: red; color: white;");
+
+
+
+//For 3v3_ANT
+         voltage_test = (data[13] << 8 )| dataArray[14] ;
+         voltage_pin = voltage_test/32767.0000 * 10;
+       // qDebug() << data[3];
+         ui->btn_3v3_ANT->setText(QString::number(voltage_pin));
+         bbutton = ui->btn_3v3_ANT; // Replace "myButton" with the object name of your QPushButton
+         if (voltage_pin >= 3)
+         bbutton->setStyleSheet("background-color: green; color: white;");
+         else
+         bbutton->setStyleSheet("background-color: red; color: white;");
     }
+
+
+    if(QString (data[0]) == "B" && QString (data[length-1]) == "S") //功能性判断开始，设置开始服务符号为"B"，hex为42,停止位为"S".
+    {
+         if ( QString(dataArray[index_arr]) == "A" )//会按照总的结束符为A:41来进行设计，头一个数据作为标识符，最后一个数据作为结束符
+         {
+             index_arr= 0 ;//设置16进制结束符号为A,hex对应值是41.
+             QPushButton* bbutton = ui->btn_bee; // Replace "myButton" with the object name of your QPushButton
+             bbutton->setStyleSheet("background-color: green; color: white;");
+             ui->btn_bee->setText("PASS");
+
+         }
+
+         if ( QString(dataArray[1]) == "P" )
+         {
+
+             QPushButton* bbutton = ui->btn_modem; // Replace "myButton" with the object name of your QPushButton
+             bbutton->setStyleSheet("background-color: green; color: white;");
+             ui->btn_modem->setText("PASS");
+         }
+
+         if ( QString(dataArray[2]) == "P" )
+         {
+
+             QPushButton* bbutton = ui->btn_sim; // Replace "myButton" with the object name of your QPushButton
+             bbutton->setStyleSheet("background-color: green; color: white;");
+             ui->btn_sim->setText("PASS");
+         }
+
+         if ( QString(dataArray[3]) == "P" )
+         {
+
+             QPushButton* bbutton = ui->btn_gsm; // Replace "myButton" with the object name of your QPushButton
+             bbutton->setStyleSheet("background-color: green; color: white;");
+             ui->btn_gsm->setText("PASS");
+         }
+
+         if ( QString(dataArray[4]) == "P" )
+         {
+
+             QPushButton* bbutton = ui->btn_ms; // Replace "myButton" with the object name of your QPushButton
+             bbutton->setStyleSheet("background-color: green; color: white;");
+             ui->btn_ms->setText("PASS");
+         }
+
+         if ( QString(dataArray[5]) == "P" )
+         {
+
+             QPushButton* bbutton = ui->btn_qspi; // Replace "myButton" with the object name of your QPushButton
+             bbutton->setStyleSheet("background-color: green; color: white;");
+             ui->btn_qspi->setText("PASS");
+         }
+
+         if ( QString(dataArray[6]) == "P" )
+         {
+
+             QPushButton* bbutton = ui->btn_can; // Replace "myButton" with the object name of your QPushButton
+             bbutton->setStyleSheet("background-color: green; color: white;");
+             ui->btn_can->setText("PASS");
+         }
+    }//功能性测试判断结束
+
+
+
 }
