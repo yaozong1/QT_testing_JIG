@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include <QSerialPort>
+#include <QIcon>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class Dialog; }
@@ -69,6 +70,8 @@ private slots:  //槽函数，遇到相应信号就触发
 
     void Serial_data_operate(char *data, int length);
 
+
+
 private:
     Ui::Dialog *ui;
 
@@ -88,4 +91,6 @@ private:
 
 
 };
+
+
 #endif // DIALOG_H
