@@ -1,0 +1,23 @@
+void Dialog::on_btn_send_clicked() //发送按钮
+{
+    if(true == mIsOpen)
+    {
+        //mSerialPort->write(ui->textEdit_send->toPlainText().toLatin1());// toPlainText(将文本编辑的文本转换为纯文本)
+        //mSerialPort->write(ui->textEdit_send->toPlainText().toStdString().c_str());
+        //注意：write函数的传递参数是QString，先转换为C++标准的string，再转为char型
+        QString str = ui->textEdit_send->toPlainText();
+        int len = str.length();
+        if(len%2 == 1)
+        {
+            str = str.insert(len - 1, '0');
+        }
+        QByteArray senddata;  //写入编辑框的数据
+        StringToHex(str,senddata);
+
+        int length = senddata.length();  //在帧尾追加STM32的关键帧
+        senddata[length + 1] = 0x0d;
+        senddata[length + 2] = 0x0a;
+        mSerialPort->write(senddata);
+    }
+}
+/
