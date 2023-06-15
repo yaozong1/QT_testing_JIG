@@ -66,7 +66,7 @@ bool Dialog::getSerialPortConfig()  //配置串口
     //串口号
     mSerialPort->setPortName(mPortName);
     //波特率
-    if("115200" == mBaudRate)
+    if("9600" == mBaudRate)
     {
         mSerialPort->setBaudRate(QSerialPort::Baud115200);
     }
@@ -190,7 +190,7 @@ void Dialog::on_SerialPort_readyRead()
 */
 
 int index_arr = 0;
-char* dataArray = new char[20];
+unsigned char* dataArray = new unsigned char[20];//改成unsigned char就没问题了,之前是char导致后续运算溢出，比如接受超过最大值一半的数，就会溢出
 
 
 void Dialog::on_SerialPort_readyRead()
@@ -472,15 +472,19 @@ void Dialog::on_btn_OV_clicked()
 
 
 
-void Dialog::Serial_data_operate(char *data, int length)
+void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的点，QTserial是按照字符的格式传过来的，每个数据接收后默认就是字符，如果要计算，要转换之后才能计算，不然容易出错
 {
     qDebug() << "进来啦11";
     if(QString (data[0]) == "A" && QString (data[length-1]) == "S")
   {
 //for EBL
         qDebug() << "进来啦22";
-        quint16 voltage_test = (data[1] << 8 )| dataArray[2] ;
+        quint16 voltage_test = (data[1] << 8 )| data[2] ;
+        //quint16 voltage_test = (static_cast<quint16>(data[1]) << 8) | static_cast<quint8>(data[2]);
+        //这个是GPT给出的格式，强制吧data[1]和[2]变成uint之后踩进行移位和其他运算,static_cast<quint16>是C++格式版本的强制类型转换，相对保守和安全
+        //不过把指针类型改成无符号之后就不需要后续进行转换了，ASCII对应的值都是无符号，所以后续直接==“A”这种操作没有问题
         float voltage_pin = voltage_test/32767.00 * 10;
+
         ui->btn_12v_in->setText(QString::number(voltage_pin));
         QPushButton* bbutton = ui->btn_12v_in; // Replace "myButton" with the object name of your QPushButton
         if (voltage_pin >= 0.7)
@@ -489,7 +493,8 @@ void Dialog::Serial_data_operate(char *data, int length)
         bbutton->setStyleSheet("background-color: red; color: white;");
 
 //For 4V_DCDC
-         voltage_test = (data[3] << 8 )| dataArray[4] ;
+         voltage_test = (data[3] << 8 )| data[4] ;
+         //voltage_test = (static_cast<quint16>(data[3]) << 8) | static_cast<quint8>(data[4]);
          voltage_pin = voltage_test/32767.00 * 10;
         // qDebug() << data[3];
          ui->btn_4V_DCDC->setText(QString::number(voltage_pin));
@@ -500,7 +505,8 @@ void Dialog::Serial_data_operate(char *data, int length)
         bbutton->setStyleSheet("background-color: red; color: white;");
 
 //For 4V_IN
-        voltage_test = (data[5] << 8 )| dataArray[6] ;
+        voltage_test = (data[5] << 8 )| data[6] ;
+        //voltage_test = (static_cast<quint16>(data[5]) << 8) | static_cast<quint8>(data[6]);
         voltage_pin = voltage_test/32767.00 * 10;
         // qDebug() << data[3];
         ui->btn_4V_IN->setText(QString::number(voltage_pin));
@@ -511,7 +517,8 @@ void Dialog::Serial_data_operate(char *data, int length)
         bbutton->setStyleSheet("background-color: red; color: white;");
 
 //For ILB
-        voltage_test = (data[7] << 8 )| dataArray[8] ;
+        voltage_test = (data[7] << 8 )| data[8] ;
+       // voltage_test = (static_cast<quint16>(data[7]) << 8) | static_cast<quint8>(data[8]);
         voltage_pin = voltage_test/32767.00 * 10;
         // qDebug() << data[3];
         ui->btn_ILB->setText(QString::number(voltage_pin));
@@ -522,7 +529,8 @@ void Dialog::Serial_data_operate(char *data, int length)
           bbutton->setStyleSheet("background-color: red; color: white;");
 
 //For 3v3_SEN
-         voltage_test = (data[9] << 8 )| dataArray[10] ;
+         voltage_test = (data[9] << 8 )| data[10] ;
+        // voltage_test = (static_cast<quint16>(data[9]) << 8) | static_cast<quint8>(data[10]);
          voltage_pin = voltage_test/32767.00 * 10;
         // qDebug() << data[3];
          ui->btn_3v3_SEN->setText(QString::number(voltage_pin));
@@ -534,7 +542,8 @@ void Dialog::Serial_data_operate(char *data, int length)
 
 
 //For 3v3_CAN
-         voltage_test = (data[11] << 8 )| dataArray[12] ;
+         voltage_test = (data[11] << 8 )| data[12] ;
+        // voltage_test = (static_cast<quint16>(data[11]) << 8) | static_cast<quint8>(data[12]);
          voltage_pin = voltage_test/32767.00 * 10;
          // qDebug() << data[3];
          ui->btn_3v3_CAN->setText(QString::number(voltage_pin));
@@ -547,7 +556,8 @@ void Dialog::Serial_data_operate(char *data, int length)
 
 
 //For 3v3_ANT
-         voltage_test = (data[13] << 8 )| dataArray[14] ;
+         voltage_test = (data[13] << 8 )| data[14] ;
+        // voltage_test = (static_cast<quint16>(data[13]) << 8) | static_cast<quint8>(data[14]);
          voltage_pin = voltage_test/32767.00 * 10;
        // qDebug() << data[3];
          ui->btn_3v3_ANT->setText(QString::number(voltage_pin));
@@ -562,7 +572,7 @@ void Dialog::Serial_data_operate(char *data, int length)
     if(QString (data[0]) == "B" && QString (data[length-1]) == "S") //功能性判断开始，设置开始服务符号为"B"，hex为42,停止位为"S".
     {
 /////////
-         if ( QString(dataArray[1]) == "P" )
+         if ( QString(data[1]) == "P" )
          {
 
              QPushButton* bbutton = ui->btn_modem; // Replace "myButton" with the object name of your QPushButton
@@ -580,7 +590,7 @@ void Dialog::Serial_data_operate(char *data, int length)
 
 /////////////
 
-         if ( QString(dataArray[2]) == "P" )
+         if ( QString(data[2]) == "P" )
          {
 
              QPushButton* bbutton = ui->btn_sim; // Replace "myButton" with the object name of your QPushButton
@@ -596,14 +606,14 @@ void Dialog::Serial_data_operate(char *data, int length)
          }
 
 ////////////
-         if ( QString(dataArray[3]) == "P" )
+         if ( QString(data[3]) == "P" )
          {
 
              QPushButton* bbutton = ui->btn_gsm; // Replace "myButton" with the object name of your QPushButton
              bbutton->setStyleSheet("background-color: green; color: white;");
              ui->btn_gsm->setText("PASS");
          }
-         else if ( QString(dataArray[3]) == "K" )//SKIP THE GSM TESTING
+         else if ( QString(data[3]) == "K" )//SKIP THE GSM TESTING
          {
 
             // QPushButton* bbutton = ui->btn_gsm; // Replace "myButton" with the object name of your QPushButton
@@ -622,7 +632,7 @@ void Dialog::Serial_data_operate(char *data, int length)
 
 
 
-         if ( QString(dataArray[4]) == "P" )
+         if ( QString(data[4]) == "P" )
          {
 
              QPushButton* bbutton = ui->btn_ms; // Replace "myButton" with the object name of your QPushButton
@@ -641,7 +651,7 @@ void Dialog::Serial_data_operate(char *data, int length)
 ///
 ///
 ///
-         if ( QString(dataArray[5]) == "P" )
+         if ( QString(data[5]) == "P" )
          {
 
              QPushButton* bbutton = ui->btn_qspi; // Replace "myButton" with the object name of your QPushButton
@@ -658,7 +668,7 @@ void Dialog::Serial_data_operate(char *data, int length)
          }
 ///////////////
 
-         if ( QString(dataArray[6]) == "P" )
+         if ( QString(data[6]) == "P" )
          {
 
              QPushButton* bbutton = ui->btn_can; // Replace "myButton" with the object name of your QPushButton
@@ -683,7 +693,7 @@ void Dialog::Serial_data_operate(char *data, int length)
 
     if(QString (data[0]) == "C" && QString (data[length-1]) == "S") //状态判断开始，设置开始服务符号为"B"，hex为42,停止位为"S".
     {
-        if ( QString(dataArray[1]) == "W" )
+        if ( QString(data[1]) == "W" )
         {
 
             QPushButton* bbutton = ui->btn_bee; //显示是否打开了JIG
