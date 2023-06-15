@@ -349,7 +349,7 @@
          <widget class="QPushButton" name="btn_modem">
           <property name="font">
            <font>
-            <family>SimSun-ExtB</family>
+            <family>Arial</family>
             <pointsize>9</pointsize>
             <weight>75</weight>
             <bold>true</bold>
@@ -385,6 +385,13 @@
         </item>
         <item>
          <widget class="QPushButton" name="btn_sim">
+          <property name="font">
+           <font>
+            <family>Arial</family>
+            <weight>75</weight>
+            <bold>true</bold>
+           </font>
+          </property>
           <property name="styleSheet">
            <string notr="true"/>
           </property>
@@ -415,6 +422,13 @@
         </item>
         <item>
          <widget class="QPushButton" name="btn_gsm">
+          <property name="font">
+           <font>
+            <family>Arial</family>
+            <weight>75</weight>
+            <bold>true</bold>
+           </font>
+          </property>
           <property name="styleSheet">
            <string notr="true"/>
           </property>
@@ -445,6 +459,13 @@
         </item>
         <item>
          <widget class="QPushButton" name="btn_ms">
+          <property name="font">
+           <font>
+            <family>Arial</family>
+            <weight>75</weight>
+            <bold>true</bold>
+           </font>
+          </property>
           <property name="styleSheet">
            <string notr="true"/>
           </property>
@@ -475,6 +496,13 @@
         </item>
         <item>
          <widget class="QPushButton" name="btn_qspi">
+          <property name="font">
+           <font>
+            <family>Arial</family>
+            <weight>75</weight>
+            <bold>true</bold>
+           </font>
+          </property>
           <property name="styleSheet">
            <string notr="true"/>
           </property>
@@ -505,6 +533,13 @@
         </item>
         <item>
          <widget class="QPushButton" name="btn_can">
+          <property name="font">
+           <font>
+            <family>Arial</family>
+            <weight>75</weight>
+            <bold>true</bold>
+           </font>
+          </property>
           <property name="styleSheet">
            <string notr="true"/>
           </property>

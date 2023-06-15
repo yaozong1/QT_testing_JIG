@@ -561,7 +561,7 @@ void Dialog::Serial_data_operate(char *data, int length)
 
     if(QString (data[0]) == "B" && QString (data[length-1]) == "S") //功能性判断开始，设置开始服务符号为"B"，hex为42,停止位为"S".
     {
-
+/////////
          if ( QString(dataArray[1]) == "P" )
          {
 
@@ -570,6 +570,16 @@ void Dialog::Serial_data_operate(char *data, int length)
              ui->btn_modem->setText("PASS");
          }
 
+         else
+         {
+
+              QPushButton* bbutton = ui->btn_modem; // Replace "myButton" with the object name of your QPushButton
+              bbutton->setStyleSheet("background-color: red; color: white;");
+              ui->btn_modem->setText("FAIL");
+         }
+
+/////////////
+
          if ( QString(dataArray[2]) == "P" )
          {
 
@@ -577,7 +587,15 @@ void Dialog::Serial_data_operate(char *data, int length)
              bbutton->setStyleSheet("background-color: green; color: white;");
              ui->btn_sim->setText("PASS");
          }
+         else
+         {
 
+              QPushButton* bbutton = ui->btn_sim; // Replace "myButton" with the object name of your QPushButton
+              bbutton->setStyleSheet("background-color: red; color: white;");
+              ui->btn_sim->setText("FAIL");
+         }
+
+////////////
          if ( QString(dataArray[3]) == "P" )
          {
 
@@ -585,6 +603,24 @@ void Dialog::Serial_data_operate(char *data, int length)
              bbutton->setStyleSheet("background-color: green; color: white;");
              ui->btn_gsm->setText("PASS");
          }
+         else if ( QString(dataArray[3]) == "K" )//SKIP THE GSM TESTING
+         {
+
+            // QPushButton* bbutton = ui->btn_gsm; // Replace "myButton" with the object name of your QPushButton
+            // bbutton->setStyleSheet("background-color: green; color: white;");
+             ui->btn_gsm->setText("SKIP");
+         }
+         else
+         {
+
+              QPushButton* bbutton = ui->btn_gsm; // Replace "myButton" with the object name of your QPushButton
+              bbutton->setStyleSheet("background-color: red; color: white;");
+              ui->btn_gsm->setText("FAIL");
+         }
+
+////////////
+
+
 
          if ( QString(dataArray[4]) == "P" )
          {
@@ -593,7 +629,18 @@ void Dialog::Serial_data_operate(char *data, int length)
              bbutton->setStyleSheet("background-color: green; color: white;");
              ui->btn_ms->setText("PASS");
          }
+         else
+         {
 
+              QPushButton* bbutton = ui->btn_ms; // Replace "myButton" with the object name of your QPushButton
+              bbutton->setStyleSheet("background-color: red; color: white;");
+              ui->btn_ms->setText("FAIL");
+         }
+///////////
+///
+///
+///
+///
          if ( QString(dataArray[5]) == "P" )
          {
 
@@ -602,12 +649,28 @@ void Dialog::Serial_data_operate(char *data, int length)
              ui->btn_qspi->setText("PASS");
          }
 
+         else
+         {
+
+              QPushButton* bbutton = ui->btn_qspi; // Replace "myButton" with the object name of your QPushButton
+              bbutton->setStyleSheet("background-color: red; color: white;");
+              ui->btn_qspi->setText("FAIL");
+         }
+///////////////
+
          if ( QString(dataArray[6]) == "P" )
          {
 
              QPushButton* bbutton = ui->btn_can; // Replace "myButton" with the object name of your QPushButton
              bbutton->setStyleSheet("background-color: green; color: white;");
              ui->btn_can->setText("PASS");
+         }
+         else
+         {
+
+              QPushButton* bbutton = ui->btn_can; // Replace "myButton" with the object name of your QPushButton
+              bbutton->setStyleSheet("background-color: red; color: white;");
+              ui->btn_can->setText("FAIL");
          }
 
          //QPushButton* bbutton = ui->btn_bee; //显示是否打开了JIG,测试完就是提示请detach jig
