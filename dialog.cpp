@@ -6,12 +6,15 @@
 #include <QDebug>
 #include <QTextEdit>
 #include <QProcess>
+#include <QIcon>
 
 Dialog::Dialog(QWidget *parent)
     : QDialog(parent)
     , ui(new Ui::Dialog)
 {
     ui->setupUi(this);
+
+    setWindowIcon(QIcon(":/TTC_NB.ico"));
 
     mSerialPort = new QSerialPort; //创建一个串口对象
 
@@ -63,7 +66,7 @@ bool Dialog::getSerialPortConfig()  //配置串口
     //串口号
     mSerialPort->setPortName(mPortName);
     //波特率
-    if("115200" == mBaudRate)
+    if("9600" == mBaudRate)
     {
         mSerialPort->setBaudRate(QSerialPort::Baud115200);
     }
@@ -134,6 +137,7 @@ void Dialog::on_btn_open_clicked()  //打开关闭按钮状态
     //    ui->Cboxdatabits->setEnabled(true);
     //    ui->Cboxstopbits->setEnabled(true);
     //    ui->btn_send->setEnabled(mIsOpen);
+        ui->textEdit_Recv-> setPlainText("");
         qDebug() << "关闭";
      //   ui->textEdit_Recv-> setPlainText("正在进行测试当中.......请稍等........");
 
@@ -186,7 +190,7 @@ void Dialog::on_SerialPort_readyRead()
 */
 
 int index_arr = 0;
-char* dataArray = new char[8];
+unsigned char* dataArray = new unsigned char[20];//改成unsigned char就没问题了,之前是char导致后续运算溢出，比如接受超过最大值一半的数，就会溢出
 
 
 void Dialog::on_SerialPort_readyRead()
@@ -204,69 +208,16 @@ void Dialog::on_SerialPort_readyRead()
             dataArray[index_arr] = recvData.at(i);
             qDebug() << dataArray[index_arr];
 
-       if(QString (dataArray[0]) == "B") //功能性判断开始，设置开始服务符号为"B"，hex为42
+
+/*
+            if(QString (dataArray[0]) == "A") //电压判断开始，设置开始服务符号为"C"，hex为43
        {
-            if ( QString(dataArray[index_arr]) == "A" )//会按照总的结束符为A:41来进行设计，头一个数据作为标识符，最后一个数据作为结束符
-            {
-                index_arr= 0 ;//设置16进制结束符号为A,hex对应值是41.
-                QPushButton* bbutton = ui->btn_bee; // Replace "myButton" with the object name of your QPushButton
-                bbutton->setStyleSheet("background-color: green; color: white;");
-                ui->btn_bee->setText("PASS");
 
-            }
+            quint16 voltage_test = (dataArray[1] << 8 )| dataArray[2] ;
 
-            if ( QString(dataArray[1]) == "P" )
-            {
-
-                QPushButton* bbutton = ui->btn_modem; // Replace "myButton" with the object name of your QPushButton
-                bbutton->setStyleSheet("background-color: green; color: white;");
-                ui->btn_modem->setText("PASS");
-            }
-
-            if ( QString(dataArray[2]) == "P" )
-            {
-
-                QPushButton* bbutton = ui->btn_sim; // Replace "myButton" with the object name of your QPushButton
-                bbutton->setStyleSheet("background-color: green; color: white;");
-                ui->btn_sim->setText("PASS");
-            }
-
-            if ( QString(dataArray[3]) == "P" )
-            {
-
-                QPushButton* bbutton = ui->btn_gsm; // Replace "myButton" with the object name of your QPushButton
-                bbutton->setStyleSheet("background-color: green; color: white;");
-                ui->btn_gsm->setText("PASS");
-            }
-
-            if ( QString(dataArray[4]) == "P" )
-            {
-
-                QPushButton* bbutton = ui->btn_ms; // Replace "myButton" with the object name of your QPushButton
-                bbutton->setStyleSheet("background-color: green; color: white;");
-                ui->btn_ms->setText("PASS");
-            }
-
-            if ( QString(dataArray[5]) == "P" )
-            {
-
-                QPushButton* bbutton = ui->btn_qspi; // Replace "myButton" with the object name of your QPushButton
-                bbutton->setStyleSheet("background-color: green; color: white;");
-                ui->btn_qspi->setText("PASS");
-            }
-
-            if ( QString(dataArray[6]) == "P" )
-            {
-
-                QPushButton* bbutton = ui->btn_can; // Replace "myButton" with the object name of your QPushButton
-                bbutton->setStyleSheet("background-color: green; color: white;");
-                ui->btn_can->setText("PASS");
-            }
-       }//功能性测试判断结束
-
-            if(QString (dataArray[0]) == "C") //电压判断开始，设置开始服务符号为"C"，hex为43
-       {
-            float voltage_pin = dataArray[1]/100.00 *  3.3;
+            float voltage_pin = voltage_test/32767.0000 * 10;
+            qDebug() << "合并后的值xxxx为: " << voltage_test; // 打印合并后的值
+            qDebug() << "合并后的值tttt为: " << voltage_pin; // 打印合并后的值
             ui->btn_12v_in->setText(QString::number(voltage_pin));
             QPushButton* bbutton = ui->btn_12v_in; // Replace "myButton" with the object name of your QPushButton
             if (voltage_pin >= 2)
@@ -274,21 +225,19 @@ void Dialog::on_SerialPort_readyRead()
             else
             bbutton->setStyleSheet("background-color: red; color: white;");
 
-
-
-
-
-
-
         }
-
+*/
 
 
             index_arr++;//正常迭代
 
 
-            if (index_arr > 7)
+            if (index_arr > 19)
+                {
+
+                Dialog::Serial_data_operate(dataArray, index_arr);
                 index_arr = 0 ;
+                }
           }
 
 
@@ -299,6 +248,7 @@ void Dialog::on_SerialPort_readyRead()
         ui->textEdit_Recv-> setPlainText(text);
 
         qDebug() << "正在接收数据";
+        if(QString (dataArray[7]) == "S") //设置停止服务符号为"S"，hex为53
         ui->textEdit_Recv-> setPlainText("DONE");
  //       qDebug() << dataArray[0];
     }
@@ -355,46 +305,38 @@ char Dialog::ConvertHexChar(char ch)
 void Dialog::on_btn_yellow_clicked()
 {
 
-    QByteArray btn_data;
-    btn_data[0] = 0x01;
-    btn_data[1] = 0x0d;
-    btn_data[2] = 0x0a;
-    mSerialPort->write(btn_data);
-    if(false == flag_yellow)
-     {
-        ui->btn_yellow->setText("关闭");
-            flag_yellow = true;
-     }
-     else
-     {
-        ui->btn_yellow->setText("打开");
-            flag_yellow = false;
-     }
+
+   // if(false == flag_yellow)//为了按键之后变文字，这里不需要了
+   //  {
+        //这一段是JLINK 烧录的代码
+        QString program = "C:/Program Files (x86)/SEGGER/JLink/JLink.exe";
+        QString argument = "D:/ihex/command_vol.txt";
+       // QProcess::startDetached(program, QStringList() << argument);
+
+        QProcess process;
+        process.start(program, QStringList() << argument);
+        process.waitForFinished();
+
+
+
+        QByteArray btn_data;
+        btn_data[0] = 0x01;
+        btn_data[1] = 0x0d;
+        btn_data[2] = 0x0a;
+        mSerialPort->write(btn_data);
+     //   ui->btn_yellow->setText("Voltage_Test");
+    //        flag_yellow = true;
+    // }
+    // else
+    // {
+    //    ui->btn_yellow->setText("REQUEST");
+    //        flag_yellow = false;
+    // }
 
 }
 
 
 
-void Dialog::on_btn_bee_clicked()
-{
-    QByteArray btn_data1;
-    btn_data1[0] = 0x02;
-    btn_data1[1] = 0x0d;
-    btn_data1[2] = 0x0a;
-    mSerialPort->write(btn_data1);
-    if(flag_bee == false)
-     {
-        ui->btn_bee->setText("关闭");
-            flag_bee = true;
-            QPushButton* bbutton = ui->btn_bee; // Replace "myButton" with the object name of your QPushButton
-            bbutton->setStyleSheet("background-color: red; color: white;");
-     }
-    else
-     {
-        ui->btn_bee->setText("打开");
-            flag_bee = false;
-     }
-}
 
 void Dialog::on_ble_clicked()
 {
@@ -432,103 +374,294 @@ void Dialog::on_ble_clicked()
 
 
 
-
-void Dialog::on_btn_sim_clicked()
+void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的点，QTserial是按照字符的格式传过来的，每个数据接收后默认就是字符，如果要计算，要转换之后才能计算，不然容易出错
 {
+    qDebug() << "进来啦11";
+    if(QString (data[0]) == "A" && QString (data[length-1]) == "S")
+  {
+//for 4V7_Boost
+        qDebug() << "进来啦22";
+        quint16 voltage_test = (data[1] << 8 )| data[2] ;
+        //quint16 voltage_test = (static_cast<quint16>(data[1]) << 8) | static_cast<quint8>(data[2]);
+        //这个是GPT给出的格式，强制吧data[1]和[2]变成uint之后踩进行移位和其他运算,static_cast<quint16>是C++格式版本的强制类型转换，相对保守和安全
+        //不过把指针类型改成无符号之后就不需要后续进行转换了，ASCII对应的值都是无符号，所以后续直接==“A”这种操作没有问题
+        float voltage_pin = voltage_test/32767.00 * 10;
+
+        ui->btn_4V7_BOOST->setText(QString::number(voltage_pin));
+        QPushButton* bbutton = ui->btn_4V7_BOOST; // Replace "myButton" with the object name of your QPushButton
+        if (voltage_pin >= 0.7)
+        bbutton->setStyleSheet("background-color: green; color: white;");
+        else
+        bbutton->setStyleSheet("background-color: red; color: white;");
+
+//For 5V0
+         voltage_test = (data[3] << 8 )| data[4] ;
+         //voltage_test = (static_cast<quint16>(data[3]) << 8) | static_cast<quint8>(data[4]);
+         voltage_pin = voltage_test/32767.00 * 10;
+        // qDebug() << data[3];
+         ui->btn_V5V0->setText(QString::number(voltage_pin));
+         bbutton = ui->btn_V5V0; // Replace "myButton" with the object name of your QPushButton
+        if (voltage_pin >= 3)
+        bbutton->setStyleSheet("background-color: green; color: white;");
+        else
+        bbutton->setStyleSheet("background-color: red; color: white;");
+
+//For 3V3_ALWAYS
+        voltage_test = (data[5] << 8 )| data[6] ;
+        //voltage_test = (static_cast<quint16>(data[5]) << 8) | static_cast<quint8>(data[6]);
+        voltage_pin = voltage_test/32767.00 * 10;
+        // qDebug() << data[3];
+        ui->btn_V3V3AWO->setText(QString::number(voltage_pin));
+        bbutton = ui->btn_V3V3AWO; // Replace "myButton" with the object name of your QPushButton
+        if (voltage_pin >= 3)
+        bbutton->setStyleSheet("background-color: green; color: white;");
+        else
+        bbutton->setStyleSheet("background-color: red; color: white;");
+
+//For EBL
+        voltage_test = (data[7] << 8 )| data[8] ;
+       // voltage_test = (static_cast<quint16>(data[7]) << 8) | static_cast<quint8>(data[8]);
+        voltage_pin = voltage_test/32767.00 * 10;
+        // qDebug() << data[3];
+        ui->btn_EBL->setText(QString::number(voltage_pin));
+        bbutton = ui->btn_EBL; // Replace "myButton" with the object name of your QPushButton
+        if (voltage_pin >= 0.3)
+          bbutton->setStyleSheet("background-color: green; color: white;");
+        else
+          bbutton->setStyleSheet("background-color: red; color: white;");
+
+//For 4V0_MODEM
+         voltage_test = (data[9] << 8 )| data[10] ;
+        // voltage_test = (static_cast<quint16>(data[9]) << 8) | static_cast<quint8>(data[10]);
+         voltage_pin = voltage_test/32767.00 * 10;
+        // qDebug() << data[3];
+         ui->btn_4V0_MODEM->setText(QString::number(voltage_pin));
+         bbutton = ui->btn_4V0_MODEM; // Replace "myButton" with the object name of your QPushButton
+         if (voltage_pin >= 3)
+            bbutton->setStyleSheet("background-color: green; color: white;");
+         else
+            bbutton->setStyleSheet("background-color: red; color: white;");
+
+
+//For 3v3_CAN
+         voltage_test = (data[11] << 8 )| data[12] ;
+        // voltage_test = (static_cast<quint16>(data[11]) << 8) | static_cast<quint8>(data[12]);
+         voltage_pin = voltage_test/32767.00 * 10;
+         // qDebug() << data[3];
+         ui->btn_3v3_ANT->setText(QString::number(voltage_pin));
+         bbutton = ui->btn_3v3_ANT; // Replace "myButton" with the object name of your QPushButton
+         if (voltage_pin >= 3)
+         bbutton->setStyleSheet("background-color: green; color: white;");
+         else
+         bbutton->setStyleSheet("background-color: red; color: white;");
+
+
+
+
+    }
+
+
+    if(QString (data[0]) == "B" && QString (data[length-1]) == "S") //功能性判断开始，设置开始服务符号为"B"，hex为42,停止位为"S".
+    {
+/////////
+         if ( QString(data[1]) == "P" )
+         {
+
+             QPushButton* bbutton = ui->btn_modem; // Replace "myButton" with the object name of your QPushButton
+             bbutton->setStyleSheet("background-color: green; color: white;");
+             ui->btn_modem->setText("PASS");
+         }
+
+         else
+         {
+
+              QPushButton* bbutton = ui->btn_modem; // Replace "myButton" with the object name of your QPushButton
+              bbutton->setStyleSheet("background-color: red; color: white;");
+              ui->btn_modem->setText("FAIL");
+         }
+
+/////////////
+
+         if ( QString(data[2]) == "P" )
+         {
+
+             QPushButton* bbutton = ui->btn_sim; // Replace "myButton" with the object name of your QPushButton
+             bbutton->setStyleSheet("background-color: green; color: white;");
+             ui->btn_sim->setText("PASS");
+         }
+         else
+         {
+
+              QPushButton* bbutton = ui->btn_sim; // Replace "myButton" with the object name of your QPushButton
+              bbutton->setStyleSheet("background-color: red; color: white;");
+              ui->btn_sim->setText("FAIL");
+         }
+
+////////////
+         if ( QString(data[3]) == "P" )
+         {
+
+             QPushButton* bbutton = ui->btn_gsm; // Replace "myButton" with the object name of your QPushButton
+             bbutton->setStyleSheet("background-color: green; color: white;");
+             ui->btn_gsm->setText("PASS");
+         }
+         else if ( QString(data[3]) == "K" )//SKIP THE GSM TESTING
+         {
+
+            // QPushButton* bbutton = ui->btn_gsm; // Replace "myButton" with the object name of your QPushButton
+            // bbutton->setStyleSheet("background-color: green; color: white;");
+             ui->btn_gsm->setText("SKIP");
+         }
+         else
+         {
+
+              QPushButton* bbutton = ui->btn_gsm; // Replace "myButton" with the object name of your QPushButton
+              bbutton->setStyleSheet("background-color: red; color: white;");
+              ui->btn_gsm->setText("FAIL");
+         }
+
+////////////
+
+
+
+         if ( QString(data[4]) == "P" )
+         {
+
+             QPushButton* bbutton = ui->btn_ms; // Replace "myButton" with the object name of your QPushButton
+             bbutton->setStyleSheet("background-color: green; color: white;");
+             ui->btn_ms->setText("PASS");
+         }
+         else
+         {
+
+              QPushButton* bbutton = ui->btn_ms; // Replace "myButton" with the object name of your QPushButton
+              bbutton->setStyleSheet("background-color: red; color: white;");
+              ui->btn_ms->setText("FAIL");
+         }
+///////////
+///
+///
+///
+///
+         if ( QString(data[5]) == "P" )
+         {
+
+             QPushButton* bbutton = ui->btn_qspi; // Replace "myButton" with the object name of your QPushButton
+             bbutton->setStyleSheet("background-color: green; color: white;");
+             ui->btn_qspi->setText("PASS");
+         }
+
+         else
+         {
+
+              QPushButton* bbutton = ui->btn_qspi; // Replace "myButton" with the object name of your QPushButton
+              bbutton->setStyleSheet("background-color: red; color: white;");
+              ui->btn_qspi->setText("FAIL");
+         }
+///////////////
+
+         if ( QString(data[6]) == "P" )
+         {
+
+             QPushButton* bbutton = ui->btn_can; // Replace "myButton" with the object name of your QPushButton
+             bbutton->setStyleSheet("background-color: green; color: white;");
+             ui->btn_can->setText("PASS");
+         }
+         else
+         {
+
+              QPushButton* bbutton = ui->btn_can; // Replace "myButton" with the object name of your QPushButton
+              bbutton->setStyleSheet("background-color: red; color: white;");
+              ui->btn_can->setText("FAIL");
+         }
+
+         //QPushButton* bbutton = ui->btn_bee; //显示是否打开了JIG,测试完就是提示请detach jig
+         //bbutton->setStyleSheet("background-color: green; color: white;");
+         ui->btn_bee->setText("Please Detach...");
+
+
+    }//功能性测试判断结束
+
+
+    if(QString (data[0]) == "C" && QString (data[length-1]) == "S") //状态判断开始，设置开始服务符号为"B"，hex为42,停止位为"S".
+    {
+        if ( QString(data[1]) == "W" )
+        {
+
+            QPushButton* bbutton = ui->btn_bee; //显示是否打开了JIG
+            bbutton->setStyleSheet("background-color: green; color: white;");
+            ui->btn_bee->setText("Detached, please lock and press");
+        }
+
+    }//状态报告判断结束
+
+
+
 
 }
 
 
-void Dialog::on_btn_gsm_clicked()
+void Dialog::on_btn_bee_clicked()
 {
+
+    QPushButton* bbutton = ui->btn_4V7_BOOST; // Replace "myButton" with the object name of your QPushButton
+    bbutton->setStyleSheet("");
+    bbutton->setText("");
+
+    bbutton = ui->btn_V5V0; // Replace "myButton" with the object name of your QPushButton
+    bbutton->setStyleSheet("");
+    bbutton->setText("");
+
+    bbutton = ui->btn_V3V3AWO; // Replace "myButton" with the object name of your QPushButton
+    bbutton->setStyleSheet("");
+    bbutton->setText("");
+
+
+    bbutton = ui->btn_EBL; // Replace "myButton" with the object name of your QPushButton
+    bbutton->setStyleSheet("");
+    bbutton->setText("");
+
+
+    bbutton = ui->btn_4V0_MODEM; // Replace "myButton" with the object name of your QPushButton
+    bbutton->setStyleSheet("");
+    bbutton->setText("");
+
+    bbutton = ui->btn_3v3_ANT; // Replace "myButton" with the object name of your QPushButton
+    bbutton->setStyleSheet("");
+    bbutton->setText("");
+
+    bbutton = ui->btn_bee; // Replace "myButton" with the object name of your QPushButton
+    bbutton->setStyleSheet("");
+    bbutton->setText("");
+
+    bbutton = ui->btn_modem; // Replace "myButton" with the object name of your QPushButton
+    bbutton->setStyleSheet("");
+    bbutton->setText("");
+
+    bbutton = ui->btn_sim; // Replace "myButton" with the object name of your QPushButton
+    bbutton->setStyleSheet("");
+    bbutton->setText("");
+
+    bbutton = ui->btn_gsm; // Replace "myButton" with the object name of your QPushButton
+    bbutton->setStyleSheet("");
+    bbutton->setText("");
+
+
+    bbutton = ui->btn_ms; // Replace "myButton" with the object name of your QPushButton
+    bbutton->setStyleSheet("");
+    bbutton->setText("");
+
+    bbutton = ui->btn_qspi; // Replace "myButton" with the object name of your QPushButton
+    bbutton->setStyleSheet("");
+    bbutton->setText("");
+
+    bbutton = ui->btn_can; // Replace "myButton" with the object name of your QPushButton
+    bbutton->setStyleSheet("");
+    bbutton->setText("");
+
+    ui->textEdit_Recv-> setPlainText("");//清除文字
 
 }
 
 
-void Dialog::on_btn_ms_clicked()
-{
 
-}
-
-
-void Dialog::on_btn_qspi_clicked()
-{
-
-}
-
-
-void Dialog::on_btn_can_clicked()
-{
-
-}
-
-
-void Dialog::on_btn_modem_clicked()
-{
-
-}
-
-
-
-void Dialog::on_btn_12v_in_clicked()
-{
-
-}
-
-
-void Dialog::on_btn_12v_outside_clicked()
-{
-
-}
-
-
-
-
-void Dialog::on_btn_4V_DCDC_clicked()
-{
-
-}
-
-
-void Dialog::on_btn_4V_IN_clicked()
-{
-
-}
-
-
-
-
-void Dialog::on_btn_ILB_clicked()
-{
-
-}
-
-
-void Dialog::on_btn_3v3_SEN_clicked()
-{
-
-}
-
-
-void Dialog::on_btn_3v3_CAN_clicked()
-{
-
-}
-
-
-void Dialog::on_btn_3v3_ANT_clicked()
-{
-
-}
-
-
-void Dialog::on_btn_OV_clicked()
-{
-
-
-}
-
-void Serial_data_operate(int Hex_serial)
-{
-
-}

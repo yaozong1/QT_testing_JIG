@@ -33,3 +33,6 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 DISTFILES += \
     THETC_black_circle-square500x500px.png \
     qtquick_add.qml
+
+RESOURCES += \
+    image.qrc

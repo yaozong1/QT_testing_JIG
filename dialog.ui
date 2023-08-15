@@ -64,7 +64,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>BLUE TEST JIG V1.0</string>
+    <string>ROAM TEST JIG V1.0</string>
    </property>
   </widget>
   <widget class="QWidget" name="layoutWidget">
@@ -239,11 +239,17 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="ble">
+       <widget class="QPushButton" name="btn_yellow">
+        <property name="baseSize">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
         <property name="font">
          <font>
           <family>Arial Black</family>
-          <pointsize>12</pointsize>
+          <pointsize>11</pointsize>
           <weight>75</weight>
           <bold>true</bold>
          </font>
@@ -252,7 +258,7 @@
          <string notr="true">background-color: #919297; color: black;</string>
         </property>
         <property name="text">
-         <string>START</string>
+         <string>VOLTAGE_TEST</string>
         </property>
        </widget>
       </item>
@@ -286,17 +292,11 @@
      <number>1</number>
     </property>
     <item>
-     <widget class="QPushButton" name="btn_yellow">
-      <property name="baseSize">
-       <size>
-        <width>0</width>
-        <height>0</height>
-       </size>
-      </property>
+     <widget class="QPushButton" name="ble">
       <property name="font">
        <font>
         <family>Arial Black</family>
-        <pointsize>10</pointsize>
+        <pointsize>12</pointsize>
         <weight>75</weight>
         <bold>true</bold>
        </font>
@@ -305,7 +305,7 @@
        <string notr="true">background-color: #919297; color: black;</string>
       </property>
       <property name="text">
-       <string>LOAD FIRMWARE</string>
+       <string>SELF TEST</string>
       </property>
      </widget>
     </item>
@@ -349,7 +349,7 @@
          <widget class="QPushButton" name="btn_modem">
           <property name="font">
            <font>
-            <family>SimSun-ExtB</family>
+            <family>Arial</family>
             <pointsize>9</pointsize>
             <weight>75</weight>
             <bold>true</bold>
@@ -359,7 +359,7 @@
            <string notr="true"/>
           </property>
           <property name="text">
-           <string>--------</string>
+           <string/>
           </property>
          </widget>
         </item>
@@ -385,11 +385,18 @@
         </item>
         <item>
          <widget class="QPushButton" name="btn_sim">
+          <property name="font">
+           <font>
+            <family>Arial</family>
+            <weight>75</weight>
+            <bold>true</bold>
+           </font>
+          </property>
           <property name="styleSheet">
            <string notr="true"/>
           </property>
           <property name="text">
-           <string>--------</string>
+           <string/>
           </property>
          </widget>
         </item>
@@ -415,11 +422,18 @@
         </item>
         <item>
          <widget class="QPushButton" name="btn_gsm">
+          <property name="font">
+           <font>
+            <family>Arial</family>
+            <weight>75</weight>
+            <bold>true</bold>
+           </font>
+          </property>
           <property name="styleSheet">
            <string notr="true"/>
           </property>
           <property name="text">
-           <string>--------</string>
+           <string/>
           </property>
          </widget>
         </item>
@@ -445,11 +459,18 @@
         </item>
         <item>
          <widget class="QPushButton" name="btn_ms">
+          <property name="font">
+           <font>
+            <family>Arial</family>
+            <weight>75</weight>
+            <bold>true</bold>
+           </font>
+          </property>
           <property name="styleSheet">
            <string notr="true"/>
           </property>
           <property name="text">
-           <string>--------</string>
+           <string/>
           </property>
          </widget>
         </item>
@@ -475,11 +496,18 @@
         </item>
         <item>
          <widget class="QPushButton" name="btn_qspi">
+          <property name="font">
+           <font>
+            <family>Arial</family>
+            <weight>75</weight>
+            <bold>true</bold>
+           </font>
+          </property>
           <property name="styleSheet">
            <string notr="true"/>
           </property>
           <property name="text">
-           <string>--------</string>
+           <string/>
           </property>
          </widget>
         </item>
@@ -505,11 +533,18 @@
         </item>
         <item>
          <widget class="QPushButton" name="btn_can">
+          <property name="font">
+           <font>
+            <family>Arial</family>
+            <weight>75</weight>
+            <bold>true</bold>
+           </font>
+          </property>
           <property name="styleSheet">
            <string notr="true"/>
           </property>
           <property name="text">
-           <string>--------</string>
+           <string/>
           </property>
          </widget>
         </item>
@@ -542,7 +577,7 @@
        </font>
       </property>
       <property name="text">
-       <string>OVERALL TEST RESULT</string>
+       <string>NEXT_BOARD</string>
       </property>
      </widget>
     </item>
@@ -566,7 +601,7 @@
        <string notr="true"/>
       </property>
       <property name="text">
-       <string>----</string>
+       <string/>
       </property>
      </widget>
     </item>
@@ -575,57 +610,13 @@
   <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
-     <x>350</x>
+     <x>340</x>
      <y>40</y>
      <width>271</width>
      <height>401</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout_7">
-    <item>
-     <layout class="QHBoxLayout" name="horizontalLayout_6">
-      <property name="spacing">
-       <number>0</number>
-      </property>
-      <item>
-       <widget class="QLabel" name="label_13">
-        <property name="font">
-         <font>
-          <family>Arial Black</family>
-          <pointsize>10</pointsize>
-          <weight>75</weight>
-          <italic>false</italic>
-          <bold>true</bold>
-         </font>
-        </property>
-        <property name="text">
-         <string>12V_OUTSIDE</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="btn_12v_outside">
-        <property name="font">
-         <font>
-          <family>Arial Black</family>
-          <pointsize>8</pointsize>
-          <weight>75</weight>
-          <bold>true</bold>
-         </font>
-        </property>
-        <property name="styleSheet">
-         <string notr="true"/>
-        </property>
-        <property name="inputMethodHints">
-         <set>Qt::ImhNone</set>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </item>
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout_9">
       <property name="spacing">
@@ -646,12 +637,12 @@
          </font>
         </property>
         <property name="text">
-         <string>ELB</string>
+         <string>4V7_BOOST</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="btn_12v_in">
+       <widget class="QPushButton" name="btn_4V7_BOOST">
         <property name="font">
          <font>
           <family>Arial</family>
@@ -690,18 +681,18 @@
          </font>
         </property>
         <property name="text">
-         <string>4V_DCDC</string>
+         <string>5V0</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="btn_4V_DCDC">
+       <widget class="QPushButton" name="btn_V5V0">
         <property name="font">
          <font>
-          <family>Arial Black</family>
-          <pointsize>8</pointsize>
-          <weight>75</weight>
-          <bold>true</bold>
+          <family>Arial</family>
+          <pointsize>10</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
          </font>
         </property>
         <property name="styleSheet">
@@ -734,18 +725,18 @@
          </font>
         </property>
         <property name="text">
-         <string>4V_IN</string>
+         <string>3V3_AWO</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="btn_4V_IN">
+       <widget class="QPushButton" name="btn_V3V3AWO">
         <property name="font">
          <font>
-          <family>Arial Black</family>
-          <pointsize>8</pointsize>
-          <weight>75</weight>
-          <bold>true</bold>
+          <family>Arial</family>
+          <pointsize>10</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
          </font>
         </property>
         <property name="styleSheet">
@@ -778,18 +769,18 @@
          </font>
         </property>
         <property name="text">
-         <string>ILB</string>
+         <string>EBL</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="btn_ILB">
+       <widget class="QPushButton" name="btn_EBL">
         <property name="font">
          <font>
-          <family>Arial Black</family>
-          <pointsize>8</pointsize>
-          <weight>75</weight>
-          <bold>true</bold>
+          <family>Arial</family>
+          <pointsize>10</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
          </font>
         </property>
         <property name="styleSheet">
@@ -822,18 +813,18 @@
          </font>
         </property>
         <property name="text">
-         <string>3V3_SEN</string>
+         <string>4V0_MODEM</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="btn_3v3_SEN">
+       <widget class="QPushButton" name="btn_4V0_MODEM">
         <property name="font">
          <font>
-          <family>Arial Black</family>
-          <pointsize>8</pointsize>
-          <weight>75</weight>
-          <bold>true</bold>
+          <family>Arial</family>
+          <pointsize>10</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
          </font>
         </property>
         <property name="styleSheet">
@@ -866,50 +857,6 @@
          </font>
         </property>
         <property name="text">
-         <string>3V3_CAN</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="btn_3v3_CAN">
-        <property name="font">
-         <font>
-          <family>Arial Black</family>
-          <pointsize>8</pointsize>
-          <weight>75</weight>
-          <bold>true</bold>
-         </font>
-        </property>
-        <property name="styleSheet">
-         <string notr="true"/>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </item>
-    <item>
-     <layout class="QHBoxLayout" name="horizontalLayout_15">
-      <property name="spacing">
-       <number>0</number>
-      </property>
-      <property name="bottomMargin">
-       <number>0</number>
-      </property>
-      <item>
-       <widget class="QLabel" name="label_24">
-        <property name="font">
-         <font>
-          <family>Arial Black</family>
-          <pointsize>10</pointsize>
-          <weight>75</weight>
-          <italic>false</italic>
-          <bold>true</bold>
-         </font>
-        </property>
-        <property name="text">
          <string>3V3_ANT</string>
         </property>
        </widget>
@@ -918,10 +865,10 @@
        <widget class="QPushButton" name="btn_3v3_ANT">
         <property name="font">
          <font>
-          <family>Arial Black</family>
-          <pointsize>8</pointsize>
-          <weight>75</weight>
-          <bold>true</bold>
+          <family>Arial</family>
+          <pointsize>10</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
          </font>
         </property>
         <property name="styleSheet">
@@ -929,74 +876,6 @@
         </property>
         <property name="text">
          <string/>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </item>
-    <item>
-     <layout class="QHBoxLayout" name="horizontalLayout_16">
-      <property name="spacing">
-       <number>0</number>
-      </property>
-      <property name="bottomMargin">
-       <number>0</number>
-      </property>
-      <item>
-       <widget class="QLabel" name="label_25">
-        <property name="font">
-         <font>
-          <family>Arial Black</family>
-          <pointsize>10</pointsize>
-          <weight>75</weight>
-          <italic>false</italic>
-          <bold>true</bold>
-         </font>
-        </property>
-        <property name="text">
-         <string>OVER_VOLTAGE</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="btn_OV">
-        <property name="maximumSize">
-         <size>
-          <width>126</width>
-          <height>41</height>
-         </size>
-        </property>
-        <property name="baseSize">
-         <size>
-          <width>9</width>
-          <height>9</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <family>Arial Black</family>
-          <pointsize>10</pointsize>
-          <weight>75</weight>
-          <bold>true</bold>
-         </font>
-        </property>
-        <property name="styleSheet">
-         <string notr="true"/>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>19</width>
-          <height>19</height>
-         </size>
-        </property>
-        <property name="autoRepeatDelay">
-         <number>291</number>
-        </property>
-        <property name="autoRepeatInterval">
-         <number>101</number>
         </property>
        </widget>
       </item>
