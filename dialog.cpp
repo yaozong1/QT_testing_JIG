@@ -8,6 +8,7 @@
 #include <QProcess>
 #include <QIcon>
 
+
 Dialog::Dialog(QWidget *parent)
     : QDialog(parent)
     , ui(new Ui::Dialog)
@@ -362,9 +363,11 @@ void Dialog::on_ble_clicked()
   start_data[0] = 0x00;
   start_data[1] = 0x0d;
   start_data[2] = 0x0a;
-  mSerialPort->write(start_data);
+  mSerialPort->write(start_data);//ESP32收到信号之后，就切换SWD的位置
 
-  ui->textEdit_Recv-> setPlainText("正在测试，等待台架返回测试结果");
+  ui->textEdit_Recv-> setPlainText("NRF烧录完成");
+
+
 
 
 }
@@ -489,6 +492,13 @@ void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的�
              bbutton->setStyleSheet("background-color: green; color: white;");
              ui->btn_sim->setText("PASS");
          }
+         else if ( QString(data[2]) == "K" )//SKIP THE GSM TESTING
+         {
+
+            // QPushButton* bbutton = ui->btn_sim; // Replace "myButton" with the object name of your QPushButton
+            // bbutton->setStyleSheet("background-color: green; color: white;");
+             ui->btn_sim->setText("SKIP");
+         }
          else
          {
 
@@ -598,6 +608,8 @@ void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的�
 
 
 
+
+
 }
 
 
@@ -663,5 +675,38 @@ void Dialog::on_btn_bee_clicked()
 
 }
 
+
+
+
+void Dialog::on_ble_2_clicked()
+{
+    ui->textEdit_Recv-> clear();
+    //这一段是JLINK 烧录的代码
+    QString program = "C:/Program Files (x86)/SEGGER/JLink/JLink.exe";
+    QString argument = "D:/ihex/command_vcu.txt";
+   // QProcess::startDetached(program, QStringList() << argument);
+
+    QProcess process;
+    process.start(program, QStringList() << argument);
+    process.waitForFinished();
+  /*
+    QByteArray output = process.readAllStandardOutput();
+    QString outputString(output);
+    ui->textEdit_Recv-> append(outputString);
+    //包含cmd反馈的信息显示到窗口中
+
+    ui->textEdit_Recv-> clear();
+  */ //暂时不添加jlink反馈信息
+    QByteArray start_data; //for arduino to recognize to start point
+    start_data[0] = 0x00;
+    start_data[1] = 0x0d;
+    start_data[2] = 0x0a;
+    mSerialPort->write(start_data);//ESP32收到信号之后，就切换SWD的位置
+
+    ui->textEdit_Recv-> setPlainText("STM32烧录完成");
+
+
+
+  }
 
 
