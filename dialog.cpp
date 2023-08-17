@@ -9,6 +9,7 @@
 #include <QIcon>
 
 
+
 Dialog::Dialog(QWidget *parent)
     : QDialog(parent)
     , ui(new Ui::Dialog)
@@ -359,15 +360,28 @@ void Dialog::on_ble_clicked()
 
   ui->textEdit_Recv-> clear();
 */ //暂时不添加jlink反馈信息
+
+
+
   QByteArray start_data; //for arduino to recognize to start point
   start_data[0] = 0x00;
   start_data[1] = 0x0d;
   start_data[2] = 0x0a;
-  mSerialPort->write(start_data);//ESP32收到信号之后，就切换SWD的位置
+  mSerialPort->write(start_data);
 
   ui->textEdit_Recv-> setPlainText("NRF烧录完成");
 
 
+  ui->textEdit_Recv-> clear();
+  //这一段是JLINK 烧录的代码
+   program = "C:/Program Files (x86)/SEGGER/JLink/JLink.exe";
+   argument = "D:/ihex/command_vcu.txt";
+ // QProcess::startDetached(program, QStringList() << argument);
+
+
+  process.start(program, QStringList() << argument);
+  process.waitForFinished();
+  ui->textEdit_Recv-> setPlainText("STM32烧录完成");
 
 
 }
@@ -590,6 +604,33 @@ void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的�
          ui->btn_bee->setText("Please Detach...");
 
 
+
+
+         //detach前要给板子清空数据
+         ui->textEdit_Recv-> clear();
+
+         //这一段是JLINK 烧录的代码
+         QString program = "C:/Program Files (x86)/SEGGER/JLink/JLink.exe";
+         QString argument = "D:/ihex/command_erase.txt";
+        // QProcess::startDetached(program, QStringList() << argument);
+
+         QProcess process;
+         process.start(program, QStringList() << argument);
+         process.waitForFinished();
+
+         ui->textEdit_Recv-> setPlainText("清空数据成功");
+
+
+
+
+
+
+
+
+
+
+
+
     }//功能性测试判断结束
 
 
@@ -678,35 +719,8 @@ void Dialog::on_btn_bee_clicked()
 
 
 
-void Dialog::on_ble_2_clicked()
-{
-    ui->textEdit_Recv-> clear();
-    //这一段是JLINK 烧录的代码
-    QString program = "C:/Program Files (x86)/SEGGER/JLink/JLink.exe";
-    QString argument = "D:/ihex/command_vcu.txt";
-   // QProcess::startDetached(program, QStringList() << argument);
-
-    QProcess process;
-    process.start(program, QStringList() << argument);
-    process.waitForFinished();
-  /*
-    QByteArray output = process.readAllStandardOutput();
-    QString outputString(output);
-    ui->textEdit_Recv-> append(outputString);
-    //包含cmd反馈的信息显示到窗口中
-
-    ui->textEdit_Recv-> clear();
-  */ //暂时不添加jlink反馈信息
-    QByteArray start_data; //for arduino to recognize to start point
-    start_data[0] = 0x00;
-    start_data[1] = 0x0d;
-    start_data[2] = 0x0a;
-    mSerialPort->write(start_data);//ESP32收到信号之后，就切换SWD的位置
-
-    ui->textEdit_Recv-> setPlainText("STM32烧录完成");
 
 
 
-  }
 
 

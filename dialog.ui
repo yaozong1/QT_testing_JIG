@@ -270,9 +270,9 @@
    <property name="geometry">
     <rect>
      <x>630</x>
-     <y>152</y>
+     <y>112</y>
      <width>311</width>
-     <height>301</height>
+     <height>341</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -882,33 +882,6 @@
      </layout>
     </item>
    </layout>
-  </widget>
-  <widget class="QPushButton" name="ble_2">
-   <property name="enabled">
-    <bool>true</bool>
-   </property>
-   <property name="geometry">
-    <rect>
-     <x>630</x>
-     <y>110</y>
-     <width>309</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <family>Arial Black</family>
-     <pointsize>12</pointsize>
-     <weight>75</weight>
-     <bold>true</bold>
-    </font>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">background-color: #919297; color: black;</string>
-   </property>
-   <property name="text">
-    <string>VCU FW LOAD</string>
-   </property>
   </widget>
  </widget>
  <resources/>
