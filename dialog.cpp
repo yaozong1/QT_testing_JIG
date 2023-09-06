@@ -32,7 +32,13 @@ Dialog::Dialog(QWidget *parent)
     int count = serialPortInfo.count();
     for(int i = 0;i < count;i++)
     {
-        ui->Cboxport->addItem(serialPortInfo.at(i).portName());
+        //ui->Cboxport->addItem(serialPortInfo.at(i).portName());
+
+
+
+        QString portName = serialPortInfo.at(i).portName();
+        QString description = serialPortInfo.at(i).description();
+        ui->Cboxport->addItem(QString("%1(%2)").arg(portName, description));
     }
 
     //等待一个触发信号，接收串口数据
@@ -58,7 +64,15 @@ bool Dialog::getSerialPortConfig()  //配置串口
     mDataBits = ui->Cboxdatabits->currentText();
     mStopBits = ui->Cboxstopbits->currentText();
 */
-    mPortName = ui->Cboxport->currentText();
+    //mPortName = ui->Cboxport->currentText();     //一开始用的办法
+
+    QString fullText = ui->Cboxport->currentText();  // 获取 "COM7(JLINK)"
+    QStringList parts = fullText.split('(');  // 使用 '(' 分割字符串
+    if(!parts.isEmpty()) {
+        mPortName = parts.first();  // 取分割后的第一部分，即 "COM7"
+    }
+
+
     mBaudRate = "115200";
     mParity = "NONE" ;
     mDataBits = "8" ;
@@ -130,7 +144,7 @@ void Dialog::on_btn_open_clicked()  //打开关闭按钮状态
     {
         //当前已经打开了串口，点击后将按钮更新为关闭状态
         mSerialPort->close();
-        ui->btn_open->setText("连接设备");
+        ui->btn_open->setText("CONNECT");
         mIsOpen = false;
         //此时可以配置串口
         ui->Cboxport->setEnabled(true);
@@ -151,7 +165,7 @@ void Dialog::on_btn_open_clicked()  //打开关闭按钮状态
         if(true == getSerialPortConfig())
         {
             mIsOpen = true;
-            ui->btn_open->setText("断开设备");
+            ui->btn_open->setText("DISCONNECT");
             qDebug() << "成功打开串口" << mPortName;
             ui->Cboxport->setEnabled(false);
          //   ui->Cboxboudrate->setEnabled(false);
@@ -159,7 +173,7 @@ void Dialog::on_btn_open_clicked()  //打开关闭按钮状态
          //   ui->Cboxdatabits->setEnabled(false);
          //   ui->Cboxstopbits->setEnabled(false);
          //   ui->btn_send->setEnabled(mIsOpen);
-            ui->textEdit_Recv-> setPlainText("设备连接成功，等待进行测试......");
+            ui->textEdit_Recv-> setPlainText("DUT connected sucessfully, waiting for being tested......");
         }
 
 
@@ -204,13 +218,10 @@ void Dialog::on_SerialPort_readyRead()
 
           int dataSize = recvData.size();
 
-
         // 逐个字节复制数据到数组中
            for (int i = 0; i < dataSize; i++) {//要从1开始，因为recvData.at(i)这个函数是从1开始的，而数组从0开始
             dataArray[index_arr] = recvData.at(i);
             qDebug() << dataArray[index_arr];
-
-
 /*
             if(QString (dataArray[0]) == "A") //电压判断开始，设置开始服务符号为"C"，hex为43
        {
@@ -230,9 +241,7 @@ void Dialog::on_SerialPort_readyRead()
         }
 */
 
-
             index_arr++;//正常迭代
-
 
             if (index_arr > 19)
                 {
@@ -242,19 +251,19 @@ void Dialog::on_SerialPort_readyRead()
                 }
           }
 
-
        // QString text;
         QString text = ui->textEdit_Recv->toPlainText();
         text += QString(recvData);
         ui->textEdit_Recv-> clear();
         ui->textEdit_Recv-> setPlainText(text);
 
-        qDebug() << "正在接收数据";
-        if(QString (dataArray[7]) == "S") //设置停止服务符号为"S"，hex为53
+        qDebug() << "Receiving datas....";
+        if(QString (dataArray[7]) == "S") //设置停止服务符号为"S"，hex为53,好像对于现在的软件来说，这句没什么用
         ui->textEdit_Recv-> setPlainText("DONE");
- //       qDebug() << dataArray[0];
+
     }
 }
+
 
 void Dialog::StringToHex(QString str, QByteArray &senddata) //字符串转换为十六进制数据0-F
 {
@@ -303,7 +312,6 @@ char Dialog::ConvertHexChar(char ch)
 
 
 
-
 void Dialog::on_btn_yellow_clicked()
 {
 
@@ -318,8 +326,6 @@ void Dialog::on_btn_yellow_clicked()
         QProcess process;
         process.start(program, QStringList() << argument);
         process.waitForFinished();
-
-
 
         QByteArray btn_data;
         btn_data[0] = 0x01;
@@ -346,7 +352,7 @@ void Dialog::on_ble_clicked()
 
   //这一段是JLINK 烧录的代码
   QString program = "C:/Program Files (x86)/SEGGER/JLink/JLink.exe";
-  QString argument = "D:/ihex/command.txt";
+  QString argument = "D:/ihex/fw_loading.txt";
  // QProcess::startDetached(program, QStringList() << argument);
 
   QProcess process;
@@ -361,28 +367,13 @@ void Dialog::on_ble_clicked()
   ui->textEdit_Recv-> clear();
 */ //暂时不添加jlink反馈信息
 
-
-
   QByteArray start_data; //for arduino to recognize to start point
   start_data[0] = 0x00;
   start_data[1] = 0x0d;
   start_data[2] = 0x0a;
   mSerialPort->write(start_data);
 
-  ui->textEdit_Recv-> setPlainText("NRF烧录完成");
-
-
-  ui->textEdit_Recv-> clear();
-  //这一段是JLINK 烧录的代码
-   program = "C:/Program Files (x86)/SEGGER/JLink/JLink.exe";
-   argument = "D:/ihex/command_vcu.txt";
- // QProcess::startDetached(program, QStringList() << argument);
-
-
-  process.start(program, QStringList() << argument);
-  process.waitForFinished();
-  ui->textEdit_Recv-> setPlainText("STM32烧录完成");
-
+  ui->textEdit_Recv-> setPlainText("Testing Fw loading done");
 
 }
 
@@ -618,7 +609,7 @@ void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的�
          process.start(program, QStringList() << argument);
          process.waitForFinished();
 
-         ui->textEdit_Recv-> setPlainText("清空数据成功");
+         ui->textEdit_Recv-> setPlainText("Clear...");
 
 
 
@@ -639,9 +630,30 @@ void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的�
         if ( QString(data[1]) == "W" )
         {
 
-            QPushButton* bbutton = ui->btn_bee; //显示是否打开了JIG
+            QPushButton* bbutton = ui->btn_bee; //显示是否提起了JIG
             bbutton->setStyleSheet("background-color: green; color: white;");
             ui->btn_bee->setText("Detached, please lock and press");
+        }
+
+    }//状态报告判断结束
+
+
+    if(QString (data[0]) == "C" && QString (data[length-1]) == "S") //状态判断开始，设置开始服务符号为"B"，hex为42,停止位为"S".
+    {
+        if ( QString(data[1]) == "E" )
+        {
+
+            QPushButton* bbutton = ui->btn_can; //显示是否提起了JIG
+            bbutton->setStyleSheet("background-color: red; color: white;");
+            ui->btn_can->setText("TIMEOUT");
+
+            ui->textEdit_Recv-> clear();
+            ui->textEdit_Recv-> setPlainText("Testing Fw loading done");
+
+            bbutton = ui->btn_bee; //显示是否提起了JIG
+            bbutton->setStyleSheet("background-color: red; color: white;");
+            ui->btn_bee->setText("Timeout, please detach...");
+
         }
 
     }//状态报告判断结束
