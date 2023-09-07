@@ -29,13 +29,13 @@
     </rect>
    </property>
    <property name="styleSheet">
-    <string notr="true">imagine url(D:\pic\T-Clogo_blue_on_black.png);</string>
+    <string notr="true">imagine url(..\pic\T-Clogo_blue_on_black.png);</string>
    </property>
    <property name="text">
     <string/>
    </property>
    <property name="pixmap">
-    <pixmap>../../../../../pic/T-Clogo_blue_on_black.png</pixmap>
+    <pixmap resource="image.qrc">:/T-Clogo_blue_on_black.png</pixmap>
    </property>
    <property name="scaledContents">
     <bool>true</bool>
@@ -861,6 +861,8 @@
    </layout>
   </widget>
  </widget>
- <resources/>
+ <resources>
+  <include location="image.qrc"/>
+ </resources>
  <connections/>
 </ui>

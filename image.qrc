@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>TTC_NB.ico</file>
+        <file>T-Clogo_blue_on_black.png</file>
     </qresource>
 </RCC>

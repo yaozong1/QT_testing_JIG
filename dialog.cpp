@@ -323,7 +323,7 @@ void Dialog::on_btn_yellow_clicked()
 
         //这一段是JLINK 烧录的代码
         QString program = "C:/Program Files (x86)/SEGGER/JLink/JLink.exe";
-        QString argument = "D:/ihex/command_vol.txt";
+        QString argument = "../ihex/command_vol.txt";
        // QProcess::startDetached(program, QStringList() << argument);
 
         QProcess process;
@@ -355,7 +355,7 @@ void Dialog::on_ble_clicked()
 
   //这一段是JLINK 烧录的代码
   QString program = "C:/Program Files (x86)/SEGGER/JLink/JLink.exe";
-  QString argument = "D:/ihex/fw_loading.txt";
+  QString argument = "../ihex/fw_loading.txt";
  // QProcess::startDetached(program, QStringList() << argument);
 
   QProcess process;
@@ -605,7 +605,7 @@ void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的�
 
          //这一段是JLINK 烧录的代码
          QString program = "C:/Program Files (x86)/SEGGER/JLink/JLink.exe";
-         QString argument = "D:/ihex/command_erase.txt";
+         QString argument = "../ihex/command_erase.txt";
         // QProcess::startDetached(program, QStringList() << argument);
 
          QProcess process;

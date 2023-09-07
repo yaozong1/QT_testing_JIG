@@ -31,6 +31,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 DISTFILES += \
+    T-Clogo_blue_on_black.png \
     THETC_black_circle-square500x500px.png \
     qtquick_add.qml
 
