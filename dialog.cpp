@@ -318,6 +318,9 @@ void Dialog::on_btn_yellow_clicked()
 
    // if(false == flag_yellow)//为了按键之后变文字，这里不需要了
    //  {
+
+
+
         //这一段是JLINK 烧录的代码
         QString program = "C:/Program Files (x86)/SEGGER/JLink/JLink.exe";
         QString argument = "D:/ihex/command_vol.txt";
@@ -668,6 +671,15 @@ void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的�
 
 void Dialog::on_btn_bee_clicked()
 {
+
+
+
+    QByteArray btn_data_begin;
+    btn_data_begin[0] = 0x09;
+    btn_data_begin[1] = 0x09;
+    btn_data_begin[2] = 0x06;
+    mSerialPort->write(btn_data_begin);
+
 
     QPushButton* bbutton = ui->btn_4V7_BOOST; // Replace "myButton" with the object name of your QPushButton
     bbutton->setStyleSheet("");
