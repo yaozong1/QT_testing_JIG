@@ -322,15 +322,19 @@ void Dialog::on_btn_yellow_clicked()
 
 
         //这一段是JLINK 烧录的代码
-        QString program = "C:/Program Files (x86)/SEGGER/JLink/JLink.exe";
+
+        QString program = "JLink.exe";
         QString argument = "../ihex/command_vol.txt";
-       // QProcess::startDetached(program, QStringList() << argument);
+        //QProcess::startDetached(program, QStringList() << argument);
 
         QProcess process;
         process.start(program, QStringList() << argument);
         process.waitForFinished();
 
+      //  system("JLink.exe  ../ihex/command_vol.txt");
+
         QByteArray btn_data;
+        btn_data.resize(3);
         btn_data[0] = 0x01;
         btn_data[1] = 0x0d;
         btn_data[2] = 0x0a;
@@ -354,7 +358,7 @@ void Dialog::on_ble_clicked()
   ui->textEdit_Recv-> clear();
 
   //这一段是JLINK 烧录的代码
-  QString program = "C:/Program Files (x86)/SEGGER/JLink/JLink.exe";
+  QString program = "JLink.exe";
   QString argument = "../ihex/fw_loading.txt";
  // QProcess::startDetached(program, QStringList() << argument);
 
@@ -371,6 +375,7 @@ void Dialog::on_ble_clicked()
 */ //暂时不添加jlink反馈信息
 
   QByteArray start_data; //for arduino to recognize to start point
+  start_data.resize(3);
   start_data[0] = 0x00;
   start_data[1] = 0x0d;
   start_data[2] = 0x0a;
@@ -675,6 +680,7 @@ void Dialog::on_btn_bee_clicked()
 
 
     QByteArray btn_data_begin;
+    btn_data_begin.resize(3);
     btn_data_begin[0] = 0x09;
     btn_data_begin[1] = 0x09;
     btn_data_begin[2] = 0x06;
