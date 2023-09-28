@@ -310,7 +310,7 @@ void Dialog::on_btn_yellow_clicked()
    //  {
         //这一段是JLINK 烧录的代码
         QString program = "C:/Program Files (x86)/SEGGER/JLink/JLink.exe";
-        QString argument = "D:/ihex/command_vol.txt";
+        QString argument = "D:/ihex/command_vol_BLUE.txt";
        // QProcess::startDetached(program, QStringList() << argument);
 
         QProcess process;
@@ -344,7 +344,7 @@ void Dialog::on_ble_clicked()
 
   //这一段是JLINK 烧录的代码
   QString program = "C:/Program Files (x86)/SEGGER/JLink/JLink.exe";
-  QString argument = "D:/ihex/command.txt";
+  QString argument = "D:/ihex/command_BLUE.txt";
  // QProcess::startDetached(program, QStringList() << argument);
 
   QProcess process;
@@ -597,6 +597,13 @@ void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的�
              bbutton->setStyleSheet("background-color: green; color: white;");
              ui->btn_sim->setText("PASS");
          }
+         else if ( QString(data[3]) == "K" )//SKIP THE GSM TESTING
+         {
+
+
+             ui->btn_sim->setText("SKIP");
+         }
+
          else
          {
 
