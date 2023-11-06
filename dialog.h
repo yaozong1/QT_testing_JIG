@@ -41,6 +41,8 @@ private slots:  //槽函数，遇到相应信号就触发
 
     void Serial_data_operate(unsigned char *data, int length);
 
+     void appendToCSV(const QString& dateTime, const QString& result, const QString& data);
+
 private:
     Ui::Dialog *ui;
 

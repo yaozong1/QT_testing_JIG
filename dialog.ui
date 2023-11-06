@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1618</width>
-    <height>981</height>
+    <width>2101</width>
+    <height>969</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -41,20 +41,7 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_13">
      <item>
-      <spacer name="horizontalSpacer_7">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeType">
-        <enum>QSizePolicy::Expanding</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>30</width>
-         <height>10</height>
-        </size>
-       </property>
-      </spacer>
+      <widget class="QTableWidget" name="tableWidget"/>
      </item>
      <item>
       <layout class="QVBoxLayout" name="verticalLayout">
@@ -1796,22 +1783,6 @@
         </layout>
        </item>
       </layout>
-     </item>
-     <item>
-      <spacer name="horizontalSpacer_10">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeType">
-        <enum>QSizePolicy::Expanding</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>30</width>
-         <height>10</height>
-        </size>
-       </property>
-      </spacer>
      </item>
     </layout>
    </item>

@@ -7,8 +7,45 @@
 #include <QTextEdit>
 #include <QProcess>
 #include <QIcon>
+#include <QDateTime>
+#include <QFile>
+#include <QTextStream>
+
+void Dialog::appendToCSV(const QString& dateTime, const QString& result, const QString& data)
+{
+    QFile file("output.csv");
+ //   QFile file("output.csv");
+
+    // 检查文件是否已存在
+    bool exists = file.exists();
+
+    if (file.open(QIODevice::WriteOnly | QIODevice::Append)) {
+        QTextStream stream(&file);
+
+        // 如果文件不存在，写入列头
+        if (!exists) {
+            stream << "Date and Time,Result,Data" << "\n";
+        }
+
+        // 然后写入数据
+        stream << dateTime << "," << result << "," << data << "\n";
+
+        file.close();
+    } else {
+        // 错误处理
+        qDebug() << "Unable to open file for writing.";
+    }
 
 
+    if (file.open(QIODevice::WriteOnly | QIODevice::Append)) {
+        QTextStream stream(&file);
+        stream << dateTime << "," << result << "," << data << "\n";
+        file.close();
+    } else {
+        // 错误处理
+        qDebug() << "Unable to open file for writing.";
+    }
+}
 
 Dialog::Dialog(QWidget *parent)
     : QDialog(parent)
@@ -26,6 +63,11 @@ Dialog::Dialog(QWidget *parent)
     flag_yellow = false;
     flag_bee = false;
     //ui->btn_send->setEnabled(mIsOpen);
+
+    // 设置表格
+    ui->tableWidget->setColumnCount(3); // 设置列数
+    ui->tableWidget->setHorizontalHeaderLabels(QStringList() << "Date Time" << "Test Result" << "Received Data");
+    //设置表格结束
 
     //识别系统的所有可用串口号，并添加到下拉列表中
     QList<QSerialPortInfo> serialPortInfo = QSerialPortInfo::availablePorts();
@@ -261,6 +303,66 @@ void Dialog::on_SerialPort_readyRead()
         if(QString (dataArray[7]) == "S") //设置停止服务符号为"S"，hex为53,好像对于现在的软件来说，这句没什么用
         ui->textEdit_Recv-> setPlainText("DONE");
 
+    }
+
+    if (mIsOpen)
+    {
+        QByteArray recvData = mSerialPort->readAll();
+        QString text = QString(recvData);
+
+        // 添加数据到表格中
+        int rowCount = ui->tableWidget->rowCount();
+        ui->tableWidget->insertRow(rowCount); // 插入新行
+
+        // 设置日期时间
+        QTableWidgetItem *dateItem = new QTableWidgetItem(QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss"));
+        ui->tableWidget->setItem(rowCount, 0, dateItem);
+
+        // 设置测试结果
+        // 这里需要根据你的实际测试结果来设置
+        QTableWidgetItem *resultItem = new QTableWidgetItem("Pass"); // 假设默认为"Pass"
+        ui->tableWidget->setItem(rowCount, 1, resultItem);
+
+        // 设置接收到的数据
+        QTableWidgetItem *dataItem = new QTableWidgetItem(text);
+        ui->tableWidget->setItem(rowCount, 2, dataItem);
+
+        qDebug() << "接收到数据：" << text;
+    }
+
+
+    //记录CSV
+    if (mIsOpen)
+    {
+        QByteArray recvData = mSerialPort->readAll();
+        QString text = QString(recvData).trimmed(); // 假设接收到的数据已经是完整的一行
+
+        // 添加数据到表格中
+        int rowCount = ui->tableWidget->rowCount();
+        ui->tableWidget->insertRow(rowCount); // 插入新行
+
+        // 获取当前的日期和时间
+        QString currentDateTime = QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss");
+
+        // 假设测试结果基于接收到的数据
+        QString testResult = "Pass"; // 你需要根据接收到的数据来决定实际的测试结果
+
+        // 表格中设置日期时间
+        QTableWidgetItem *dateItem = new QTableWidgetItem(currentDateTime);
+        ui->tableWidget->setItem(rowCount, 0, dateItem);
+
+        // 表格中设置测试结果
+        QTableWidgetItem *resultItem = new QTableWidgetItem(testResult);
+        ui->tableWidget->setItem(rowCount, 1, resultItem);
+
+        // 表格中设置接收到的数据
+        QTableWidgetItem *dataItem = new QTableWidgetItem(text);
+        ui->tableWidget->setItem(rowCount, 2, dataItem);
+
+        // 将相同的数据追加到CSV文件
+        appendToCSV(currentDateTime, testResult, text);
+
+        qDebug() << "接收到数据并记录到CSV：" << text;
     }
 }
 
