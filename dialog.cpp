@@ -73,7 +73,7 @@ bool Dialog::getSerialPortConfig()  //配置串口
     }
 
 
-    mBaudRate = "115200";
+    mBaudRate = "9600";
     mParity = "NONE" ;
     mDataBits = "8" ;
     mStopBits = "1";
@@ -82,7 +82,7 @@ bool Dialog::getSerialPortConfig()  //配置串口
     //串口号
     mSerialPort->setPortName(mPortName);
     //波特率
-    if("9600" == mBaudRate)
+    if("115200" == mBaudRate)
     {
         mSerialPort->setBaudRate(QSerialPort::Baud115200);
     }
@@ -247,6 +247,8 @@ void Dialog::on_SerialPort_readyRead()
                 {
 
                 Dialog::Serial_data_operate(dataArray, index_arr);
+                memset(dataArray, 0, 20);
+                qDebug() << "处理完，清空uart数据";
                 index_arr = 0 ;
                 }
           }
@@ -397,6 +399,7 @@ void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的�
   {
 //for 4V7_Boost
         qDebug() << "进来啦22";
+
         quint16 voltage_test = (data[1] << 8 )| data[2] ;
         //quint16 voltage_test = (static_cast<quint16>(data[1]) << 8) | static_cast<quint8>(data[2]);
         //这个是GPT给出的格式，强制吧data[1]和[2]变成uint之后踩进行移位和其他运算,static_cast<quint16>是C++格式版本的强制类型转换，相对保守和安全
