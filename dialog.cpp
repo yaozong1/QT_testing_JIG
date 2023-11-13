@@ -206,7 +206,7 @@ void Dialog::on_SerialPort_readyRead()
 */
 
 int index_arr = 0;
-unsigned char* dataArray = new unsigned char[20];//改成unsigned char就没问题了,之前是char导致后续运算溢出，比如接受超过最大值一半的数，就会溢出
+unsigned char* dataArray = new unsigned char[30];//改成unsigned char就没问题了,之前是char导致后续运算溢出，比如接受超过最大值一半的数，就会溢出
 
 
 void Dialog::on_SerialPort_readyRead()
@@ -243,11 +243,11 @@ void Dialog::on_SerialPort_readyRead()
 
             index_arr++;//正常迭代
 
-            if (index_arr > 19)
+            if (index_arr > 29)
                 {
 
                 Dialog::Serial_data_operate(dataArray, index_arr);
-                memset(dataArray, 0, 20);
+                memset(dataArray, 0, 30);
                 qDebug() << "处理完，清空uart数据";
                 index_arr = 0 ;
                 }
@@ -394,11 +394,11 @@ void Dialog::on_ble_clicked()
 
 void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的点，QTserial是按照字符的格式传过来的，每个数据接收后默认就是字符，如果要计算，要转换之后才能计算，不然容易出错
 {
-    qDebug() << "进来啦11";
+    qDebug() << "uart循环进入";
     if(QString (data[0]) == "A" && QString (data[length-1]) == "S")
   {
 //for 4V7_Boost
-        qDebug() << "进来啦22";
+        qDebug() << "处理电压测试数据";
 
         quint16 voltage_test = (data[1] << 8 )| data[2] ;
         //quint16 voltage_test = (static_cast<quint16>(data[1]) << 8) | static_cast<quint8>(data[2]);
@@ -483,6 +483,7 @@ void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的�
     if(QString (data[0]) == "B" && QString (data[length-1]) == "S") //功能性判断开始，设置开始服务符号为"B"，hex为42,停止位为"S".
     {
 /////////
+          qDebug() << "处理自测试结果数据";
          if ( QString(data[1]) == "P" )
          {
 
