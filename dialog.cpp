@@ -206,7 +206,7 @@ void Dialog::on_SerialPort_readyRead()
 */
 
 int index_arr = 0;
-unsigned char* dataArray = new unsigned char[30];//改成unsigned char就没问题了,之前是char导致后续运算溢出，比如接受超过最大值一半的数，就会溢出
+unsigned char* dataArray = new unsigned char[20];//改成unsigned char就没问题了,之前是char导致后续运算溢出，比如接受超过最大值一半的数，就会溢出
 
 
 void Dialog::on_SerialPort_readyRead()
@@ -243,7 +243,7 @@ void Dialog::on_SerialPort_readyRead()
 
             index_arr++;//正常迭代
 
-            if (index_arr > 29)
+            if (index_arr > 19)
                 {
 
                 Dialog::Serial_data_operate(dataArray, index_arr);
