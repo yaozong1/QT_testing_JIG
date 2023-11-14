@@ -247,7 +247,7 @@ void Dialog::on_SerialPort_readyRead()
                 {
 
                 Dialog::Serial_data_operate(dataArray, index_arr);
-                memset(dataArray, 0, 30);
+                memset(dataArray, 0, 20);
                 qDebug() << "处理完，清空uart数据";
                 index_arr = 0 ;
                 }
