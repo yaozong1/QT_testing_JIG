@@ -613,13 +613,13 @@ void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的�
          ui->textEdit_Recv-> clear();
 
          //这一段是JLINK 烧录的代码
-         QString program = "C:/Program Files (x86)/SEGGER/JLink/JLink.exe";
-         QString argument = "../ihex/command_erase.txt";
+        // QString program = "C:/Program Files (x86)/SEGGER/JLink/JLink.exe";
+        // QString argument = "../ihex/command_erase.txt";
         // QProcess::startDetached(program, QStringList() << argument);
 
-         QProcess process;
-         process.start(program, QStringList() << argument);
-         process.waitForFinished();
+        // QProcess process;
+        // process.start(program, QStringList() << argument);
+        // process.waitForFinished();
 
          ui->textEdit_Recv-> setPlainText("Clear...");
 
