@@ -383,6 +383,9 @@ void Dialog::on_ble_clicked()
   start_data[2] = 0x0a;
   mSerialPort->write(start_data);
 
+  index_arr = 0;
+  qDebug() << "清空index，等待下一次数据";
+
   ui->textEdit_Recv-> setPlainText("Testing Fw loading done");
 
 }
@@ -627,13 +630,6 @@ void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的�
 
 
 
-
-
-
-
-
-
-
     }//功能性测试判断结束
 
 
@@ -680,9 +676,10 @@ void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的�
 
 void Dialog::on_btn_bee_clicked()
 {
+    index_arr = 0;
+    qDebug() << "清空index，等待下一次数据";
 
-
-
+    qDebug() << "Reset ESP32";
     QByteArray btn_data_begin;
     btn_data_begin.resize(3);
     btn_data_begin[0] = 0x09;
