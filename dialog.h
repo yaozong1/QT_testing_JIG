@@ -4,6 +4,7 @@
 #include <QDialog>
 #include <QSerialPort>
 #include <QIcon>
+#include <QTimer>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class Dialog; }
@@ -12,6 +13,9 @@ QT_END_NAMESPACE
 class Dialog : public QDialog
 {
     Q_OBJECT
+    QTimer *mTimer; // 定时器成员变量
+
+    void onTimeout(); // 超时处理槽函数
 
 public:
     Dialog(QWidget *parent = nullptr);
@@ -40,6 +44,9 @@ private slots:  //槽函数，遇到相应信号就触发
     void on_ble_clicked();
 
     void Serial_data_operate(unsigned char *data, int length);
+
+
+
 
 private:
     Ui::Dialog *ui;

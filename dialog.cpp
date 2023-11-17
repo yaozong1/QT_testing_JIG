@@ -7,6 +7,8 @@
 #include <QTextEdit>
 #include <QProcess>
 #include <QIcon>
+#include <QTimer>
+
 
 
 
@@ -14,6 +16,12 @@ Dialog::Dialog(QWidget *parent)
     : QDialog(parent)
     , ui(new Ui::Dialog)
 {
+
+    mTimer = new QTimer(this);
+    mTimer->setInterval(500); // 设置超时时间为2000毫秒（2秒）
+    connect(mTimer, &QTimer::timeout, this, &Dialog::onTimeout);
+    //加入定时器，为UART开启超时模式，实现软件防抖动
+
     ui->setupUi(this);
 
     setWindowIcon(QIcon(":/TTC_NB.ico"));
@@ -206,40 +214,42 @@ void Dialog::on_SerialPort_readyRead()
 */
 
 int index_arr = 0;
+
 unsigned char* dataArray = new unsigned char[20];//改成unsigned char就没问题了,之前是char导致后续运算溢出，比如接受超过最大值一半的数，就会溢出
 
+void Dialog::onTimeout()
+{
+    // 超时发生时的处理
+    memset(dataArray, 0, 20); // 清空dataArray
+    index_arr = 0; // 重置index_arr
+    qDebug() << "超时，清空uart数据";
+
+    mTimer->stop(); // 停止定时器
+}
 
 void Dialog::on_SerialPort_readyRead()
 {
 
     if (true == mIsOpen)
     {
+
           QByteArray recvData = mSerialPort->readAll();
 
           int dataSize = recvData.size();
 
+
+
         // 逐个字节复制数据到数组中
-           for (int i = 0; i < dataSize; i++) {//要从1开始，因为recvData.at(i)这个函数是从1开始的，而数组从0开始
+           for (int i = 0; i < dataSize; i++)//要从1开始，因为recvData.at(i)这个函数是从1开始的，而数组从0开始
+          {
+
+            if (index_arr == 0) {
+                qDebug() << "UART接收开始";
+                mTimer->start(); // 当开始接收数据时，启动定时器
+            }
+
             dataArray[index_arr] = recvData.at(i);
             qDebug() << dataArray[index_arr];
-/*
-            if(QString (dataArray[0]) == "A") //电压判断开始，设置开始服务符号为"C"，hex为43
-       {
-
-            quint16 voltage_test = (dataArray[1] << 8 )| dataArray[2] ;
-
-            float voltage_pin = voltage_test/32767.0000 * 10;
-            qDebug() << "合并后的值xxxx为: " << voltage_test; // 打印合并后的值
-            qDebug() << "合并后的值tttt为: " << voltage_pin; // 打印合并后的值
-            ui->btn_12v_in->setText(QString::number(voltage_pin));
-            QPushButton* bbutton = ui->btn_12v_in; // Replace "myButton" with the object name of your QPushButton
-            if (voltage_pin >= 2)
-            bbutton->setStyleSheet("background-color: green; color: white;");
-            else
-            bbutton->setStyleSheet("background-color: red; color: white;");
-
-        }
-*/
 
             index_arr++;//正常迭代
 
@@ -251,6 +261,8 @@ void Dialog::on_SerialPort_readyRead()
                 qDebug() << "处理完，清空uart数据";
                 index_arr = 0 ;
                 }
+            mTimer->start(); // 每次接收到新数据时重置定时器
+
           }
 
        // QString text;
