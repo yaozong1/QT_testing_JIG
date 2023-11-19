@@ -272,7 +272,6 @@ void Dialog::on_SerialPort_readyRead()
         ui->textEdit_Recv-> setPlainText(text);
 
         qDebug() << "Receiving datas....";
-        if(QString (dataArray[7]) == "S") //设置停止服务符号为"S"，hex为53,好像对于现在的软件来说，这句没什么用
         ui->textEdit_Recv-> setPlainText("DONE");
 
     }
@@ -617,6 +616,23 @@ void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的�
               ui->btn_can->setText("FAIL");
          }
 
+         ///////////////
+
+         if ( QString(data[7]) == "P" )
+         {
+
+              QPushButton* bbutton = ui->btn_vcu_flash; // Replace "myButton" with the object name of your QPushButton
+              bbutton->setStyleSheet("background-color: green; color: white;");
+              ui->btn_vcu_flash->setText("PASS");
+         }
+         else
+         {
+
+              QPushButton* bbutton = ui->btn_vcu_flash; // Replace "myButton" with the object name of your QPushButton
+              bbutton->setStyleSheet("background-color: red; color: white;");
+              ui->btn_vcu_flash->setText("FAIL");
+         }
+
          //QPushButton* bbutton = ui->btn_bee; //显示是否打开了JIG,测试完就是提示请detach jig
          //bbutton->setStyleSheet("background-color: green; color: white;");
          ui->btn_bee->setText("Please Detach...");
@@ -678,7 +694,24 @@ void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的�
 
     }//状态报告判断结束
 
+   if(QString (data[0]) == "q" && QString (data[length-1]) == "s")
+    {
+        qDebug() << "收到IMEI";
+        // QString text;
+        QString text = ui->textEdit_IMEI->toPlainText();
+        for(int i = 1; i<16; i++)
+        {
+           // qDebug() << "Value of i:" << i;
+            text += QString(data[i]);
+        }
 
+        ui->textEdit_IMEI-> clear();
+        ui->textEdit_IMEI->setPlainText(text);
+       // QString fullText = "IMEI: " + text;
+       // ui->textEdit_IMEI->setPlainText(fullText);
+
+
+    }
 
 
 
@@ -755,7 +788,12 @@ void Dialog::on_btn_bee_clicked()
     bbutton->setStyleSheet("");
     bbutton->setText("");
 
+    bbutton = ui->btn_vcu_flash; // Replace "myButton" with the object name of your QPushButton
+    bbutton->setStyleSheet("");
+    bbutton->setText("");
+
     ui->textEdit_Recv-> setPlainText("");//清除文字
+    ui->textEdit_IMEI-> clear();//清除QT文字
 
 }
 
