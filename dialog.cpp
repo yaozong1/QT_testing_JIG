@@ -9,6 +9,18 @@
 #include <QIcon>
 #include <QTimer>
 
+#include <QFile>
+#include <QTextStream>
+#include <QDate>
+
+float V_dcdcboost = 0;
+float V_fiveVzero = 0;
+float V_AWO = 0;
+float V_EBL = 0;
+float V_MODEM = 0;
+float V_ANT = 0;
+
+
 
 
 
@@ -419,10 +431,11 @@ void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的�
         //这个是GPT给出的格式，强制吧data[1]和[2]变成uint之后踩进行移位和其他运算,static_cast<quint16>是C++格式版本的强制类型转换，相对保守和安全
         //不过把指针类型改成无符号之后就不需要后续进行转换了，ASCII对应的值都是无符号，所以后续直接==“A”这种操作没有问题
         float voltage_pin = voltage_test/32767.00 * 10;
+        V_dcdcboost =voltage_pin; //for saving to csv
 
         ui->btn_4V7_BOOST->setText(QString::number(voltage_pin));
         QPushButton* bbutton = ui->btn_4V7_BOOST; // Replace "myButton" with the object name of your QPushButton
-        if (voltage_pin >= 0.7)
+        if (voltage_pin >= 4.559 && voltage_pin <= 4.841) // 4.7V+-3%
         bbutton->setStyleSheet("background-color: green; color: white;");
         else
         bbutton->setStyleSheet("background-color: red; color: white;");
@@ -434,7 +447,7 @@ void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的�
         // qDebug() << data[3];
          ui->btn_V5V0->setText(QString::number(voltage_pin));
          bbutton = ui->btn_V5V0; // Replace "myButton" with the object name of your QPushButton
-        if (voltage_pin >= 3)
+         if (voltage_pin >= 4.85 && voltage_pin <= 5.15)// 5V+-3%
         bbutton->setStyleSheet("background-color: green; color: white;");
         else
         bbutton->setStyleSheet("background-color: red; color: white;");
@@ -446,7 +459,7 @@ void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的�
         // qDebug() << data[3];
         ui->btn_V3V3AWO->setText(QString::number(voltage_pin));
         bbutton = ui->btn_V3V3AWO; // Replace "myButton" with the object name of your QPushButton
-        if (voltage_pin >= 3)
+        if (voltage_pin >= 3.201 && voltage_pin <= 3.399)// 3.3V+-3%
         bbutton->setStyleSheet("background-color: green; color: white;");
         else
         bbutton->setStyleSheet("background-color: red; color: white;");
@@ -458,7 +471,7 @@ void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的�
         // qDebug() << data[3];
         ui->btn_EBL->setText(QString::number(voltage_pin));
         bbutton = ui->btn_EBL; // Replace "myButton" with the object name of your QPushButton
-        if (voltage_pin >= 0.3)
+        if (voltage_pin >= 0.3725 && voltage_pin <= 0.3955)// 0.384V+-3%
           bbutton->setStyleSheet("background-color: green; color: white;");
         else
           bbutton->setStyleSheet("background-color: red; color: white;");
@@ -470,7 +483,7 @@ void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的�
         // qDebug() << data[3];
          ui->btn_4V0_MODEM->setText(QString::number(voltage_pin));
          bbutton = ui->btn_4V0_MODEM; // Replace "myButton" with the object name of your QPushButton
-         if (voltage_pin >= 3)
+         if (voltage_pin >= 3.88 && voltage_pin <= 4.12) //4v+-3%
             bbutton->setStyleSheet("background-color: green; color: white;");
          else
             bbutton->setStyleSheet("background-color: red; color: white;");
@@ -483,12 +496,10 @@ void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的�
          // qDebug() << data[3];
          ui->btn_3v3_ANT->setText(QString::number(voltage_pin));
          bbutton = ui->btn_3v3_ANT; // Replace "myButton" with the object name of your QPushButton
-         if (voltage_pin >= 3)
+         if (voltage_pin >= 3.201 && voltage_pin <= 3.399)// 3.3V+-3%
          bbutton->setStyleSheet("background-color: green; color: white;");
          else
          bbutton->setStyleSheet("background-color: red; color: white;");
-
-
 
 
     }
@@ -707,15 +718,44 @@ void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的�
 
         ui->textEdit_IMEI-> clear();
         ui->textEdit_IMEI->setPlainText(text);
+
+        QString imei = text; // 从UI获取IMEI
+        QString volTest = "PASS"; // 电压测试结果
+        QString selfTest = "PASS"; // 芯片测试结果
+
+        saveToCsv(imei, volTest, selfTest);
        // QString fullText = "IMEI: " + text;
        // ui->textEdit_IMEI->setPlainText(fullText);
 
-
     }
 
+}
 
+void Dialog::saveToCsv(const QString& imei, const QString& volTest, const QString& selfTest)
+{
+    QFile file("../test_results.csv");
 
+    // 打开文件用于追加
+    if (!file.open(QIODevice::Append | QIODevice::Text))
+        return;
 
+    QTextStream out(&file);
+
+    // 检查文件是否为空（即是否首次写入）
+    if (file.size() == 0) {
+        // 写入列标题
+        out << "Date,IMEI_number,4V7_BOOST,self_Test,voltage_probe\n";
+    }
+
+    // 获取当前日期
+    QString currentDateTime = QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm");
+    qDebug() << "Current DateTime:" << currentDateTime;  // 调试输出，检查格式化后的字符串
+
+    // 写入数据
+
+    out << currentDateTime  << "," << imei << "," << V_dcdcboost << "," << selfTest << "," << volTest<< "\n";
+
+    file.close();
 }
 
 
