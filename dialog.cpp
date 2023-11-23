@@ -670,28 +670,6 @@ void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的�
               vcu_qspi_flash_result = "FAIL";
          }
 
-         //QPushButton* bbutton = ui->btn_bee; //显示是否打开了JIG,测试完就是提示请detach jig
-         //bbutton->setStyleSheet("background-color: green; color: white;");
-         ui->btn_bee->setText("Please Detach...");
-
-
-
-
-         //detach前要给板子清空数据
-         ui->textEdit_Recv-> clear();
-
-         //这一段是JLINK 烧录的代码
-        // QString program = "C:/Program Files (x86)/SEGGER/JLink/JLink.exe";
-        // QString argument = "../ihex/command_erase.txt";
-        // QProcess::startDetached(program, QStringList() << argument);
-
-        // QProcess process;
-        // process.start(program, QStringList() << argument);
-        // process.waitForFinished();
-
-         ui->textEdit_Recv-> setPlainText("Clear...");
-
-
 
 
 
@@ -725,11 +703,162 @@ void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的�
 
             bbutton = ui->btn_bee; //显示是否提起了JIG
             bbutton->setStyleSheet("background-color: red; color: white;");
-            ui->btn_bee->setText("Timeout, please detach...");
+            ui->btn_bee->setText("Timeout...");
 
         }
 
     }//状态报告判断结束
+
+    if(QString (data[0]) == "c" && QString (data[10]) == "q") //这个是CAN失败，才会触发的代码//这里很特殊，是第一位和第十一位做判断
+    {
+
+        qDebug() << "处理自测试结果数据,来自ESP32 UART";
+        if ( QString(data[1]) == "P" )
+        {
+
+            QPushButton* bbutton = ui->btn_modem; // Replace "myButton" with the object name of your QPushButton
+            bbutton->setStyleSheet("background-color: green; color: white;");
+            ui->btn_modem->setText("PASS");
+            modem_status_result = "PASS";
+        }
+
+        else
+        {
+
+            QPushButton* bbutton = ui->btn_modem; // Replace "myButton" with the object name of your QPushButton
+            bbutton->setStyleSheet("background-color: red; color: white;");
+            ui->btn_modem->setText("FAIL");
+            modem_status_result = "FAIL";
+        }
+
+        /////////////
+
+        if ( QString(data[2]) == "P" )
+        {
+
+            QPushButton* bbutton = ui->btn_sim; // Replace "myButton" with the object name of your QPushButton
+            bbutton->setStyleSheet("background-color: green; color: white;");
+            ui->btn_sim->setText("PASS");
+
+
+        }
+        else if ( QString(data[2]) == "K" )//SKIP THE GSM TESTING
+        {
+
+            // QPushButton* bbutton = ui->btn_sim; // Replace "myButton" with the object name of your QPushButton
+            // bbutton->setStyleSheet("background-color: green; color: white;");
+            ui->btn_sim->setText("SKIP");
+
+        }
+        else
+        {
+
+            QPushButton* bbutton = ui->btn_sim; // Replace "myButton" with the object name of your QPushButton
+            bbutton->setStyleSheet("background-color: red; color: white;");
+            ui->btn_sim->setText("FAIL");
+        }
+
+        ////////////
+        if ( QString(data[3]) == "P" )
+        {
+
+            QPushButton* bbutton = ui->btn_gsm; // Replace "myButton" with the object name of your QPushButton
+            bbutton->setStyleSheet("background-color: green; color: white;");
+            ui->btn_gsm->setText("PASS");
+        }
+        else if ( QString(data[3]) == "K" )//SKIP THE GSM TESTING
+        {
+
+            // QPushButton* bbutton = ui->btn_gsm; // Replace "myButton" with the object name of your QPushButton
+            // bbutton->setStyleSheet("background-color: green; color: white;");
+            ui->btn_gsm->setText("SKIP");
+        }
+        else
+        {
+
+            QPushButton* bbutton = ui->btn_gsm; // Replace "myButton" with the object name of your QPushButton
+            bbutton->setStyleSheet("background-color: red; color: white;");
+            ui->btn_gsm->setText("FAIL");
+        }
+
+        ////////////
+
+
+
+        if ( QString(data[4]) == "P" )
+        {
+
+            QPushButton* bbutton = ui->btn_ms; // Replace "myButton" with the object name of your QPushButton
+            bbutton->setStyleSheet("background-color: green; color: white;");
+            ui->btn_ms->setText("PASS");
+            motion_sensor_result = "PASS";
+        }
+        else
+        {
+
+            QPushButton* bbutton = ui->btn_ms; // Replace "myButton" with the object name of your QPushButton
+            bbutton->setStyleSheet("background-color: red; color: white;");
+            ui->btn_ms->setText("FAIL");
+            motion_sensor_result = "FAIL";
+        }
+        ///////////
+        ///
+        ///
+        ///
+        ///
+        if ( QString(data[5]) == "P" )
+        {
+
+            QPushButton* bbutton = ui->btn_qspi; // Replace "myButton" with the object name of your QPushButton
+            bbutton->setStyleSheet("background-color: green; color: white;");
+            ui->btn_qspi->setText("PASS");
+            nrf_qspi_flash_result = "PASS";
+        }
+
+        else
+        {
+
+            QPushButton* bbutton = ui->btn_qspi; // Replace "myButton" with the object name of your QPushButton
+            bbutton->setStyleSheet("background-color: red; color: white;");
+            ui->btn_qspi->setText("FAIL");
+            nrf_qspi_flash_result = "FAIL";
+        }
+        ///////////////
+
+ //直接给判断，忽略数组里面can的默认result，因为没收到，所以就判断为错误
+
+
+
+            QPushButton* bbutton = ui->btn_can; // Replace "myButton" with the object name of your QPushButton
+            bbutton->setStyleSheet("background-color: red; color: white;");
+            ui->btn_can->setText("FAIL");
+            canbus_result = "FAIL";
+
+/////////////////////////////
+///
+///
+        ///////////////
+
+        if ( QString(data[7]) == "P" )
+        {
+
+            QPushButton* bbutton = ui->btn_vcu_flash; // Replace "myButton" with the object name of your QPushButton
+            bbutton->setStyleSheet("background-color: green; color: white;");
+            ui->btn_vcu_flash->setText("PASS");
+            vcu_qspi_flash_result = "PASS";
+        }
+        else
+        {
+
+            QPushButton* bbutton = ui->btn_vcu_flash; // Replace "myButton" with the object name of your QPushButton
+            bbutton->setStyleSheet("background-color: red; color: white;");
+            ui->btn_vcu_flash->setText("FAIL");
+            vcu_qspi_flash_result = "FAIL";
+        }
+
+    }//状态报告判断结束
+
+ //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
    if(QString (data[0]) == "q" && QString (data[length-1]) == "s")
     {
@@ -786,11 +915,37 @@ void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的�
 
 
         saveToCsv(imei);
+
        // QString fullText = "IMEI: " + text;
        // ui->textEdit_IMEI->setPlainText(fullText);
 
-    }
 
+
+   /////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        //QPushButton* bbutton = ui->btn_bee; //显示是否打开了JIG,测试完就是提示请detach jig
+        //bbutton->setStyleSheet("background-color: green; color: white;");
+        ui->btn_bee->setText("Please Detach...");
+
+
+
+
+        //detach前要给板子清空数据
+        ui->textEdit_Recv-> clear();
+
+        //这一段是JLINK 烧录的代码
+        // QString program = "C:/Program Files (x86)/SEGGER/JLink/JLink.exe";
+        // QString argument = "../ihex/command_erase.txt";
+        // QProcess::startDetached(program, QStringList() << argument);
+
+        // QProcess process;
+        // process.start(program, QStringList() << argument);
+        // process.waitForFinished();
+
+        ui->textEdit_Recv-> setPlainText("Clear...");
+
+    }
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }
 
 void Dialog::saveToCsv(const QString& imei)//void Dialog::saveToCsv(const QString& imei, const QString& volTest, const QString& selfTest)
