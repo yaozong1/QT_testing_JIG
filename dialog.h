@@ -46,7 +46,7 @@ private slots:  //槽函数，遇到相应信号就触发
 
     void Serial_data_operate(unsigned char *data, int length);
 
-    void saveToCsv(const QString& imei, const QString& volTest, const QString& selfTest);
+    void saveToCsv(const QString& imei);
 
 
 

@@ -21,8 +21,13 @@ float V_MODEM = 0;
 float V_ANT = 0;
 
 
-
-
+QString modem_status_result = "#";
+QString motion_sensor_result = "#";
+QString nrf_qspi_flash_result = "#";
+QString canbus_result = "#";
+QString vcu_qspi_flash_result = "#";
+QString igntion_result = "#";
+QString immobilizer_result = "#";
 
 Dialog::Dialog(QWidget *parent)
     : QDialog(parent)
@@ -425,13 +430,15 @@ void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的�
   {
 //for 4V7_Boost
         qDebug() << "处理电压测试数据";
+        quint16 voltage_test = 0;
+        float voltage_pin = 0   ;
 
-        quint16 voltage_test = (data[1] << 8 )| data[2] ;
+        voltage_test = (data[1] << 8 )| data[2] ;
         //quint16 voltage_test = (static_cast<quint16>(data[1]) << 8) | static_cast<quint8>(data[2]);
         //这个是GPT给出的格式，强制吧data[1]和[2]变成uint之后踩进行移位和其他运算,static_cast<quint16>是C++格式版本的强制类型转换，相对保守和安全
         //不过把指针类型改成无符号之后就不需要后续进行转换了，ASCII对应的值都是无符号，所以后续直接==“A”这种操作没有问题
-        float voltage_pin = voltage_test/32767.00 * 10;
-        V_dcdcboost =voltage_pin; //for saving to csv
+        voltage_pin = voltage_test/32767.00 * 10;
+        V_dcdcboost =voltage_pin; //for saving to csv,sometimes we will change the sequence,so add one more step.
 
         ui->btn_4V7_BOOST->setText(QString::number(voltage_pin));
         QPushButton* bbutton = ui->btn_4V7_BOOST; // Replace "myButton" with the object name of your QPushButton
@@ -444,6 +451,7 @@ void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的�
          voltage_test = (data[3] << 8 )| data[4] ;
          //voltage_test = (static_cast<quint16>(data[3]) << 8) | static_cast<quint8>(data[4]);
          voltage_pin = voltage_test/32767.00 * 10;
+         V_fiveVzero = voltage_pin; //for saving to csv
         // qDebug() << data[3];
          ui->btn_V5V0->setText(QString::number(voltage_pin));
          bbutton = ui->btn_V5V0; // Replace "myButton" with the object name of your QPushButton
@@ -456,6 +464,7 @@ void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的�
         voltage_test = (data[5] << 8 )| data[6] ;
         //voltage_test = (static_cast<quint16>(data[5]) << 8) | static_cast<quint8>(data[6]);
         voltage_pin = voltage_test/32767.00 * 10;
+        V_AWO = voltage_pin; //for saving to csv
         // qDebug() << data[3];
         ui->btn_V3V3AWO->setText(QString::number(voltage_pin));
         bbutton = ui->btn_V3V3AWO; // Replace "myButton" with the object name of your QPushButton
@@ -468,6 +477,8 @@ void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的�
         voltage_test = (data[7] << 8 )| data[8] ;
        // voltage_test = (static_cast<quint16>(data[7]) << 8) | static_cast<quint8>(data[8]);
         voltage_pin = voltage_test/32767.00 * 10;
+        V_EBL = voltage_pin; //for saving to csv
+
         // qDebug() << data[3];
         ui->btn_EBL->setText(QString::number(voltage_pin));
         bbutton = ui->btn_EBL; // Replace "myButton" with the object name of your QPushButton
@@ -480,6 +491,7 @@ void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的�
          voltage_test = (data[9] << 8 )| data[10] ;
         // voltage_test = (static_cast<quint16>(data[9]) << 8) | static_cast<quint8>(data[10]);
          voltage_pin = voltage_test/32767.00 * 10;
+         V_MODEM = voltage_pin;
         // qDebug() << data[3];
          ui->btn_4V0_MODEM->setText(QString::number(voltage_pin));
          bbutton = ui->btn_4V0_MODEM; // Replace "myButton" with the object name of your QPushButton
@@ -493,6 +505,7 @@ void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的�
          voltage_test = (data[11] << 8 )| data[12] ;
         // voltage_test = (static_cast<quint16>(data[11]) << 8) | static_cast<quint8>(data[12]);
          voltage_pin = voltage_test/32767.00 * 10;
+         V_ANT = voltage_pin;
          // qDebug() << data[3];
          ui->btn_3v3_ANT->setText(QString::number(voltage_pin));
          bbutton = ui->btn_3v3_ANT; // Replace "myButton" with the object name of your QPushButton
@@ -515,6 +528,7 @@ void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的�
              QPushButton* bbutton = ui->btn_modem; // Replace "myButton" with the object name of your QPushButton
              bbutton->setStyleSheet("background-color: green; color: white;");
              ui->btn_modem->setText("PASS");
+             modem_status_result = "PASS";
          }
 
          else
@@ -523,6 +537,7 @@ void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的�
               QPushButton* bbutton = ui->btn_modem; // Replace "myButton" with the object name of your QPushButton
               bbutton->setStyleSheet("background-color: red; color: white;");
               ui->btn_modem->setText("FAIL");
+              modem_status_result = "FAIL";
          }
 
 /////////////
@@ -533,6 +548,8 @@ void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的�
              QPushButton* bbutton = ui->btn_sim; // Replace "myButton" with the object name of your QPushButton
              bbutton->setStyleSheet("background-color: green; color: white;");
              ui->btn_sim->setText("PASS");
+
+
          }
          else if ( QString(data[2]) == "K" )//SKIP THE GSM TESTING
          {
@@ -540,6 +557,7 @@ void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的�
             // QPushButton* bbutton = ui->btn_sim; // Replace "myButton" with the object name of your QPushButton
             // bbutton->setStyleSheet("background-color: green; color: white;");
              ui->btn_sim->setText("SKIP");
+
          }
          else
          {
@@ -582,6 +600,7 @@ void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的�
              QPushButton* bbutton = ui->btn_ms; // Replace "myButton" with the object name of your QPushButton
              bbutton->setStyleSheet("background-color: green; color: white;");
              ui->btn_ms->setText("PASS");
+             motion_sensor_result = "PASS";
          }
          else
          {
@@ -589,6 +608,7 @@ void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的�
               QPushButton* bbutton = ui->btn_ms; // Replace "myButton" with the object name of your QPushButton
               bbutton->setStyleSheet("background-color: red; color: white;");
               ui->btn_ms->setText("FAIL");
+              motion_sensor_result = "FAIL";
          }
 ///////////
 ///
@@ -601,6 +621,7 @@ void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的�
              QPushButton* bbutton = ui->btn_qspi; // Replace "myButton" with the object name of your QPushButton
              bbutton->setStyleSheet("background-color: green; color: white;");
              ui->btn_qspi->setText("PASS");
+             nrf_qspi_flash_result = "PASS";
          }
 
          else
@@ -609,6 +630,7 @@ void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的�
               QPushButton* bbutton = ui->btn_qspi; // Replace "myButton" with the object name of your QPushButton
               bbutton->setStyleSheet("background-color: red; color: white;");
               ui->btn_qspi->setText("FAIL");
+              nrf_qspi_flash_result = "FAIL";
          }
 ///////////////
 
@@ -618,6 +640,7 @@ void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的�
              QPushButton* bbutton = ui->btn_can; // Replace "myButton" with the object name of your QPushButton
              bbutton->setStyleSheet("background-color: green; color: white;");
              ui->btn_can->setText("PASS");
+             canbus_result = "PASS";
          }
          else
          {
@@ -625,6 +648,7 @@ void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的�
               QPushButton* bbutton = ui->btn_can; // Replace "myButton" with the object name of your QPushButton
               bbutton->setStyleSheet("background-color: red; color: white;");
               ui->btn_can->setText("FAIL");
+              canbus_result = "FAIL";
          }
 
          ///////////////
@@ -635,6 +659,7 @@ void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的�
               QPushButton* bbutton = ui->btn_vcu_flash; // Replace "myButton" with the object name of your QPushButton
               bbutton->setStyleSheet("background-color: green; color: white;");
               ui->btn_vcu_flash->setText("PASS");
+              vcu_qspi_flash_result = "PASS";
          }
          else
          {
@@ -642,6 +667,7 @@ void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的�
               QPushButton* bbutton = ui->btn_vcu_flash; // Replace "myButton" with the object name of your QPushButton
               bbutton->setStyleSheet("background-color: red; color: white;");
               ui->btn_vcu_flash->setText("FAIL");
+              vcu_qspi_flash_result = "FAIL";
          }
 
          //QPushButton* bbutton = ui->btn_bee; //显示是否打开了JIG,测试完就是提示请detach jig
@@ -710,6 +736,43 @@ void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的�
         qDebug() << "收到IMEI";
         // QString text;
         QString text = ui->textEdit_IMEI->toPlainText();
+
+
+        if ( QString(data[17]) == "P" )//它收到的是27-10，第17位
+        {
+
+            QPushButton* bbutton = ui->btn_vcu_ign; // Replace "myButton" with the object name of your QPushButton
+            bbutton->setStyleSheet("background-color: green; color: white;");
+            ui->btn_vcu_ign->setText("PASS");
+            igntion_result = "PASS";
+        }
+        else
+        {
+
+            QPushButton* bbutton = ui->btn_vcu_ign; // Replace "myButton" with the object name of your QPushButton
+            bbutton->setStyleSheet("background-color: red; color: white;");
+            ui->btn_vcu_ign->setText("FAIL");
+            igntion_result = "FAIL";
+        }
+
+
+        if ( QString(data[18]) == "P" )//它收到的是27-10，第17位
+        {
+
+            QPushButton* bbutton = ui->btn_vcu_imout; // Replace "myButton" with the object name of your QPushButton
+            bbutton->setStyleSheet("background-color: green; color: white;");
+            ui->btn_vcu_imout->setText("PASS");
+            immobilizer_result = "PASS";
+        }
+        else
+        {
+
+            QPushButton* bbutton = ui->btn_vcu_imout; // Replace "myButton" with the object name of your QPushButton
+            bbutton->setStyleSheet("background-color: red; color: white;");
+            ui->btn_vcu_imout->setText("FAIL");
+            immobilizer_result = "FAIL";
+        }
+
         for(int i = 1; i<16; i++)
         {
            // qDebug() << "Value of i:" << i;
@@ -720,10 +783,9 @@ void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的�
         ui->textEdit_IMEI->setPlainText(text);
 
         QString imei = text; // 从UI获取IMEI
-        QString volTest = "PASS"; // 电压测试结果
-        QString selfTest = "PASS"; // 芯片测试结果
 
-        saveToCsv(imei, volTest, selfTest);
+
+        saveToCsv(imei);
        // QString fullText = "IMEI: " + text;
        // ui->textEdit_IMEI->setPlainText(fullText);
 
@@ -731,7 +793,7 @@ void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的�
 
 }
 
-void Dialog::saveToCsv(const QString& imei, const QString& volTest, const QString& selfTest)
+void Dialog::saveToCsv(const QString& imei)//void Dialog::saveToCsv(const QString& imei, const QString& volTest, const QString& selfTest)
 {
     QFile file("../test_results.csv");
 
@@ -744,16 +806,33 @@ void Dialog::saveToCsv(const QString& imei, const QString& volTest, const QStrin
     // 检查文件是否为空（即是否首次写入）
     if (file.size() == 0) {
         // 写入列标题
-        out << "Date,IMEI_number,4V7_BOOST,self_Test,voltage_probe\n";
+        out << ",,VOLTAGE PROBING,,,,,FUNCTION TESTING,,,,,,\n";
+        out << "Date,IMEI_number,4V7_BOOST,5V0,3V3_AWO,EBL,4V0_MODEM,3V3_ANT,SIM_MODEM,MOTION_SENSOR,NRF_FLASH,CAN_BUS,VCU_FLASH,IGNITION,IMMOBILIZER\n";
     }
+    /*
+    float V_dcdcboost = 0;
+    float V_fiveVzero = 0;
+    float V_AWO = 0;
+    float V_EBL = 0;
+    float V_MODEM = 0;
+    float V_ANT = 0;
 
+
+    QString modem_status_result = "#";
+    QString motion_sensor_result = "#";
+    QString nrf_qspi_flash_result = "#";
+    QString canbus_result = "#";
+    QString vcu_qspi_flash_result = "#";
+    QString igntion_result = "#";
+    QString immobilizer_result = "#";
+*/
     // 获取当前日期
     QString currentDateTime = QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm");
     qDebug() << "Current DateTime:" << currentDateTime;  // 调试输出，检查格式化后的字符串
 
     // 写入数据
 
-    out << currentDateTime  << "," << imei << "," << V_dcdcboost << "," << selfTest << "," << volTest<< "\n";
+    out << currentDateTime  << "," << imei << "," << V_dcdcboost << "," << V_fiveVzero << ","<< V_AWO << ","<< V_EBL << ","<< V_MODEM<< ","<< V_ANT << ","<< modem_status_result << "," << motion_sensor_result<< ","<< nrf_qspi_flash_result << "," << canbus_result<< ","<< vcu_qspi_flash_result << ","<< igntion_result<< "," << immobilizer_result<< "\n";
 
     file.close();
 }
@@ -829,6 +908,14 @@ void Dialog::on_btn_bee_clicked()
     bbutton->setText("");
 
     bbutton = ui->btn_vcu_flash; // Replace "myButton" with the object name of your QPushButton
+    bbutton->setStyleSheet("");
+    bbutton->setText("");
+
+    bbutton = ui->btn_vcu_imout; // Replace "myButton" with the object name of your QPushButton
+    bbutton->setStyleSheet("");
+    bbutton->setText("");
+
+    bbutton = ui->btn_vcu_ign; // Replace "myButton" with the object name of your QPushButton
     bbutton->setStyleSheet("");
     bbutton->setText("");
 
