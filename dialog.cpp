@@ -570,7 +570,7 @@ void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的�
         // qDebug() << data[3];
         ui->btn_EBL->setText(QString::number(voltage_pin));
         bbutton = ui->btn_EBL; // Replace "myButton" with the object name of your QPushButton
-        if (voltage_pin >= 0.3725 && voltage_pin <= 0.3955)// 0.384V+-3%
+        if (voltage_pin >= 0.361 && voltage_pin <= 0.399)// 0.384V+-3%
           bbutton->setStyleSheet("background-color: green; color: white;");
         else
 
