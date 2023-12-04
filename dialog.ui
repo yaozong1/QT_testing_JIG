@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1618</width>
+    <width>1622</width>
     <height>1327</height>
    </rect>
   </property>
@@ -156,6 +156,29 @@
           <size>
            <width>20</width>
            <height>13</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QProgressBar" name="progressBar">
+         <property name="value">
+          <number>0</number>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer_29">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Minimum</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>10</height>
           </size>
          </property>
         </spacer>
@@ -2133,7 +2156,7 @@
             </font>
            </property>
            <property name="text">
-            <string>NEXT_BOARD</string>
+            <string>Result/Reset</string>
            </property>
           </widget>
          </item>

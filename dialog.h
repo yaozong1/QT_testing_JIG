@@ -51,6 +51,8 @@ private slots:  //槽函数，遇到相应信号就触发
 
 
 
+    void on_btn_EBL_clicked();
+
 private:
     Ui::Dialog *ui;
 

@@ -13,12 +13,23 @@
 #include <QTextStream>
 #include <QDate>
 
+
+
+#define CHINESE
+//#define ENGLISH
+
+
+
 float V_dcdcboost = 0;
 float V_fiveVzero = 0;
 float V_AWO = 0;
 float V_EBL = 0;
 float V_MODEM = 0;
 float V_ANT = 0;
+
+bool vol_continue_testing = true;
+
+bool overall_testing_result = true;
 
 
 QString modem_status_result = "#";
@@ -51,6 +62,29 @@ Dialog::Dialog(QWidget *parent)
     flag_yellow = false;
     flag_bee = false;
     //ui->btn_send->setEnabled(mIsOpen);
+////////////////////////////////////////////////--------------设置UI的语言版本------------------------/////////////////////////////
+    #ifdef ENGLISH
+    ui->btn_open->setText("CONNECT");
+    ui->btn_yellow->setText("Start Testing");
+    ui->ble->setText("Self Test");
+    ui->label_4->setText("ROAM TEST JIG V1.0");
+    ui->label->setText(" TEST _ JIG _ PORT");
+    ui->label_11->setText("Status/Reset(click)");
+
+    #endif
+
+    #ifdef CHINESE
+    ui->btn_open->setText("连接");
+    ui->btn_yellow->setText("开始测试");
+    ui->ble->setText("模块自测");
+    ui->label_4->setText("ROAM测试台架V1.0");
+    ui->label->setText(" 测试端口号");
+    ui->label_11->setText("状态/复位(点击)");
+    // 其他中文文本...
+    #endif
+
+////////////////////////////////////////////////--------------设置UI的语言版本------------------------/////////////////////////////
+
 
     //识别系统的所有可用串口号，并添加到下拉列表中
     QList<QSerialPortInfo> serialPortInfo = QSerialPortInfo::availablePorts();
@@ -68,6 +102,7 @@ Dialog::Dialog(QWidget *parent)
 
     //等待一个触发信号，接收串口数据
     connect(mSerialPort, SIGNAL(readyRead()), this, SLOT(on_SerialPort_readyRead()));
+
 
 
 }
@@ -169,7 +204,17 @@ void Dialog::on_btn_open_clicked()  //打开关闭按钮状态
     {
         //当前已经打开了串口，点击后将按钮更新为关闭状态
         mSerialPort->close();
-        ui->btn_open->setText("CONNECT");
+
+#ifdef ENGLISH
+       ui->btn_open->setText("CONNECT");
+
+#endif
+
+#ifdef CHINESE
+        ui->btn_open->setText("连接");
+        // 其他中文文本...
+#endif
+
         mIsOpen = false;
         //此时可以配置串口
         ui->Cboxport->setEnabled(true);
@@ -190,7 +235,17 @@ void Dialog::on_btn_open_clicked()  //打开关闭按钮状态
         if(true == getSerialPortConfig())
         {
             mIsOpen = true;
+
+#ifdef ENGLISH
             ui->btn_open->setText("DISCONNECT");
+
+#endif
+
+#ifdef CHINESE
+            ui->btn_open->setText("断开连接");
+
+#endif
+
             qDebug() << "成功打开串口" << mPortName;
             ui->Cboxport->setEnabled(false);
          //   ui->Cboxboudrate->setEnabled(false);
@@ -198,7 +253,16 @@ void Dialog::on_btn_open_clicked()  //打开关闭按钮状态
          //   ui->Cboxdatabits->setEnabled(false);
          //   ui->Cboxstopbits->setEnabled(false);
          //   ui->btn_send->setEnabled(mIsOpen);
+#ifdef ENGLISH
             ui->textEdit_Recv-> setPlainText("DUT connected sucessfully, waiting for being tested......");
+
+#endif
+
+#ifdef CHINESE
+            ui->textEdit_Recv-> setPlainText("设备连接成功，等待测试");
+
+#endif
+
         }
 
 
@@ -283,13 +347,16 @@ void Dialog::on_SerialPort_readyRead()
           }
 
        // QString text;
+
+          //以下是在窗口显示串口接收数据的
+/*
         QString text = ui->textEdit_Recv->toPlainText();
         text += QString(recvData);
         ui->textEdit_Recv-> clear();
         ui->textEdit_Recv-> setPlainText(text);
-
+*/
         qDebug() << "Receiving datas....";
-        ui->textEdit_Recv-> setPlainText("DONE");
+     //   ui->textEdit_Recv-> setPlainText("DONE");
 
     }
 }
@@ -345,12 +412,8 @@ char Dialog::ConvertHexChar(char ch)
 void Dialog::on_btn_yellow_clicked()
 {
 
-
-   // if(false == flag_yellow)//为了按键之后变文字，这里不需要了
-   //  {
-
-
-
+        overall_testing_result = true; //每次测试之前复位总测试结果
+        vol_continue_testing = true;
         //这一段是JLINK 烧录的代码
 
         QString program = "JLink.exe";
@@ -369,14 +432,14 @@ void Dialog::on_btn_yellow_clicked()
         btn_data[1] = 0x0d;
         btn_data[2] = 0x0a;
         mSerialPort->write(btn_data);
-     //   ui->btn_yellow->setText("Voltage_Test");
-    //        flag_yellow = true;
-    // }
-    // else
-    // {
-    //    ui->btn_yellow->setText("REQUEST");
-    //        flag_yellow = false;
-    // }
+
+
+        QPushButton* bbutton = ui->btn_bee; // 清空数据右下角按键提示数据
+        bbutton->setStyleSheet("");
+        bbutton->setText("");
+
+        ui->progressBar->setValue(10);//进度条
+
 
 }
 
@@ -414,7 +477,21 @@ void Dialog::on_ble_clicked()
   index_arr = 0;
   qDebug() << "清空index，等待下一次数据";
 
+#ifdef ENGLISH
   ui->textEdit_Recv-> setPlainText("Testing Fw loading done");
+
+#endif
+
+#ifdef CHINESE
+  ui->textEdit_Recv-> setPlainText("测试程序写入成功");
+
+#endif
+
+  //////////////////////////////////////////////////////// ---------更新进度条&UI-----------/////////////////////////////////
+  ui->progressBar->setValue(50);//进度条
+  // 强制处理所有挂起的事件，确保UI更新
+  QApplication::processEvents();
+  ////////////////////////////////////////////////////////////---------更新进度条&UI-----------/////////////////////////////////
 
 }
 
@@ -445,7 +522,11 @@ void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的�
         if (voltage_pin >= 4.559 && voltage_pin <= 4.841) // 4.7V+-3%
         bbutton->setStyleSheet("background-color: green; color: white;");
         else
-        bbutton->setStyleSheet("background-color: red; color: white;");
+
+           {
+           vol_continue_testing = false;
+           bbutton->setStyleSheet("background-color: red; color: white;");
+          }
 
 //For 5V0
          voltage_test = (data[3] << 8 )| data[4] ;
@@ -458,7 +539,11 @@ void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的�
          if (voltage_pin >= 4.85 && voltage_pin <= 5.15)// 5V+-3%
         bbutton->setStyleSheet("background-color: green; color: white;");
         else
-        bbutton->setStyleSheet("background-color: red; color: white;");
+
+         {
+           vol_continue_testing = false;
+           bbutton->setStyleSheet("background-color: red; color: white;");
+          }
 
 //For 3V3_ALWAYS
         voltage_test = (data[5] << 8 )| data[6] ;
@@ -471,7 +556,10 @@ void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的�
         if (voltage_pin >= 3.201 && voltage_pin <= 3.399)// 3.3V+-3%
         bbutton->setStyleSheet("background-color: green; color: white;");
         else
-        bbutton->setStyleSheet("background-color: red; color: white;");
+         {
+           vol_continue_testing = false;
+           bbutton->setStyleSheet("background-color: red; color: white;");
+          }
 
 //For EBL
         voltage_test = (data[7] << 8 )| data[8] ;
@@ -485,7 +573,11 @@ void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的�
         if (voltage_pin >= 0.3725 && voltage_pin <= 0.3955)// 0.384V+-3%
           bbutton->setStyleSheet("background-color: green; color: white;");
         else
-          bbutton->setStyleSheet("background-color: red; color: white;");
+
+          {
+           vol_continue_testing = false;
+           bbutton->setStyleSheet("background-color: red; color: white;");
+          }
 
 //For 4V0_MODEM
          voltage_test = (data[9] << 8 )| data[10] ;
@@ -498,8 +590,11 @@ void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的�
          if (voltage_pin >= 3.88 && voltage_pin <= 4.12) //4v+-3%
             bbutton->setStyleSheet("background-color: green; color: white;");
          else
-            bbutton->setStyleSheet("background-color: red; color: white;");
 
+         {
+           vol_continue_testing = false;
+           bbutton->setStyleSheet("background-color: red; color: white;");
+         }
 
 //For 3v3_CAN
          voltage_test = (data[11] << 8 )| data[12] ;
@@ -512,10 +607,68 @@ void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的�
          if (voltage_pin >= 3.201 && voltage_pin <= 3.399)// 3.3V+-3%
          bbutton->setStyleSheet("background-color: green; color: white;");
          else
-         bbutton->setStyleSheet("background-color: red; color: white;");
+         {
+           vol_continue_testing = false;
+           bbutton->setStyleSheet("background-color: red; color: white;");
+         }
+
+        ui->progressBar->setValue(30);//进度条
+
+         // 强制处理所有挂起的事件，确保UI更新
+         QApplication::processEvents();
+
+
+         /////////////////////////////////------------- //如果电压测试成功改了，就自动进行下一步------------/////////////////////////////
+
+         if (vol_continue_testing == true)
+         {
+           on_ble_clicked();
+           qDebug() << "电压测试通过，进入下一轮测试";
+             #ifdef ENGLISH
+              ui->textEdit_Recv-> setPlainText("Voltage testing pass, entered self testing, waiting for result");
+
+             #endif
+
+             #ifdef CHINESE
+              ui->textEdit_Recv-> setPlainText("电压测试通过，进入自测模式，等待测试结果");
+
+             #endif
+
+          // ui->textEdit_Recv-> setPlainText("1234567");
+
+
+         }
+
+         if (vol_continue_testing == false)
+         {
+           //on_ble_clicked();
+           qDebug() << "电压测试失败";
+
+
+           #ifdef ENGLISH
+               ui->textEdit_Recv-> setPlainText("Voltage testing failed， please test it again or swap device");
+
+
+           #endif
+
+           #ifdef CHINESE
+
+           ui->textEdit_Recv-> setPlainText("电压测试失败，请点击右下角按键后再次测试，或更换测试设备");
+           #endif
+
+           ui->progressBar->setValue(100);//进度条
+
+         }
+
+
+
+         /////////////////////////////////------------- //如果电压测试成功改了，就自动进行下一步------------////////////////////////////
 
 
     }
+
+
+
 
 
     if(QString (data[0]) == "B" && QString (data[length-1]) == "S") //功能性判断开始，设置开始服务符号为"B"，hex为42,停止位为"S".
@@ -538,6 +691,7 @@ void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的�
               bbutton->setStyleSheet("background-color: red; color: white;");
               ui->btn_modem->setText("FAIL");
               modem_status_result = "FAIL";
+              overall_testing_result = false;
          }
 
 /////////////
@@ -565,6 +719,7 @@ void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的�
               QPushButton* bbutton = ui->btn_sim; // Replace "myButton" with the object name of your QPushButton
               bbutton->setStyleSheet("background-color: red; color: white;");
               ui->btn_sim->setText("FAIL");
+              overall_testing_result = false;
          }
 
 ////////////
@@ -588,6 +743,7 @@ void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的�
               QPushButton* bbutton = ui->btn_gsm; // Replace "myButton" with the object name of your QPushButton
               bbutton->setStyleSheet("background-color: red; color: white;");
               ui->btn_gsm->setText("FAIL");
+              overall_testing_result = false;
          }
 
 ////////////
@@ -609,6 +765,7 @@ void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的�
               bbutton->setStyleSheet("background-color: red; color: white;");
               ui->btn_ms->setText("FAIL");
               motion_sensor_result = "FAIL";
+              overall_testing_result = false;
          }
 ///////////
 ///
@@ -631,6 +788,7 @@ void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的�
               bbutton->setStyleSheet("background-color: red; color: white;");
               ui->btn_qspi->setText("FAIL");
               nrf_qspi_flash_result = "FAIL";
+              overall_testing_result = false;
          }
 ///////////////
 
@@ -649,6 +807,7 @@ void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的�
               bbutton->setStyleSheet("background-color: red; color: white;");
               ui->btn_can->setText("FAIL");
               canbus_result = "FAIL";
+              overall_testing_result = false;
          }
 
          ///////////////
@@ -668,10 +827,16 @@ void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的�
               bbutton->setStyleSheet("background-color: red; color: white;");
               ui->btn_vcu_flash->setText("FAIL");
               vcu_qspi_flash_result = "FAIL";
+              overall_testing_result = false;
          }
 
 
 
+//////////////////////////////////////////////////////// ---------更新进度条&UI-----------/////////////////////////////////
+            ui->progressBar->setValue(70);//进度条
+            // 强制处理所有挂起的事件，确保UI更新
+            QApplication::processEvents();
+////////////////////////////////////////////////////////////---------更新进度条&UI-----------/////////////////////////////////
 
     }//功能性测试判断结束
 
@@ -681,9 +846,32 @@ void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的�
         if ( QString(data[1]) == "W" )
         {
 
+            on_btn_bee_clicked();//jig提起就自动按下这个案件，重置ESP32和清除面板数据
             QPushButton* bbutton = ui->btn_bee; //显示是否提起了JIG
-            bbutton->setStyleSheet("background-color: green; color: white;");
-            ui->btn_bee->setText("Detached, please lock and press");
+
+
+
+           #ifdef ENGLISH
+
+               bbutton->setStyleSheet("background-color: #09FFC0; color: black;");
+               ui->btn_bee->setText("Detached, please swap device");
+
+           #endif
+
+           #ifdef CHINESE
+
+           bbutton->setStyleSheet("background-color: #09FFC0; color: black;");
+           ui->btn_bee->setText("已释放，请更换板子");
+
+           #endif
+
+
+           //////////////////////////////////////////////////////// ---------更新进度条&UI-----------/////////////////////////////////
+           ui->progressBar->setValue(0);//进度条
+           // 强制处理所有挂起的事件，确保UI更新
+           QApplication::processEvents();
+           ////////////////////////////////////////////////////////////---------更新进度条&UI-----------/////////////////////////////////
+
         }
 
     }//状态报告判断结束
@@ -696,18 +884,46 @@ void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的�
 
             QPushButton* bbutton = ui->btn_can; //显示是否提起了JIG
             bbutton->setStyleSheet("background-color: red; color: white;");
-            ui->btn_can->setText("TIMEOUT");
+            #ifdef ENGLISH
+            ui->btn_can->setText("CANBUS TIMEOUT");
+
+            #endif
+
+            #ifdef CHINESE
+                  ui->btn_can->setText("CANBUS等待超时");
+
+            #endif
+
+
+
+
 
             ui->textEdit_Recv-> clear();
             ui->textEdit_Recv-> setPlainText("Testing Fw loading done");
 
             bbutton = ui->btn_bee; //显示是否提起了JIG
             bbutton->setStyleSheet("background-color: red; color: white;");
-            ui->btn_bee->setText("Timeout...");
 
+             #ifdef ENGLISH
+              ui->btn_bee->setText("Timeout...");
+
+             #endif
+
+             #ifdef CHINESE
+                ui->btn_bee->setText("超时...");
+
+             #endif
+
+//////////////////////////////////////////////////////// ---------更新进度条&UI-----------/////////////////////////////////
+                ui->progressBar->setValue(60);//进度条
+                // 强制处理所有挂起的事件，确保UI更新
+                QApplication::processEvents();
+////////////////////////////////////////////////////////////---------更新进度条&UI-----------/////////////////////////////////
         }
 
     }//状态报告判断结束
+
+
 
     if(QString (data[0]) == "c" && QString (data[10]) == "q") //这个是CAN失败，才会触发的代码//这里很特殊，是第一位和第十一位做判断
     {
@@ -833,6 +1049,7 @@ void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的�
             bbutton->setStyleSheet("background-color: red; color: white;");
             ui->btn_can->setText("FAIL");
             canbus_result = "FAIL";
+            overall_testing_result = false;
 
 /////////////////////////////
 ///
@@ -854,7 +1071,15 @@ void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的�
             bbutton->setStyleSheet("background-color: red; color: white;");
             ui->btn_vcu_flash->setText("FAIL");
             vcu_qspi_flash_result = "FAIL";
+            overall_testing_result = false;
         }
+
+
+ //////////////////////////////////////////////////////// ---------更新进度条&UI-----------/////////////////////////////////
+        ui->progressBar->setValue(70);//进度条
+        // 强制处理所有挂起的事件，确保UI更新
+        QApplication::processEvents();
+ ////////////////////////////////////////////////////////////---------更新进度条&UI-----------/////////////////////////////////
 
     }//状态报告判断结束
 
@@ -882,6 +1107,7 @@ void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的�
             bbutton->setStyleSheet("background-color: red; color: white;");
             ui->btn_vcu_ign->setText("FAIL");
             igntion_result = "FAIL";
+            overall_testing_result = false;
         }
 
 
@@ -892,6 +1118,7 @@ void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的�
             bbutton->setStyleSheet("background-color: green; color: white;");
             ui->btn_vcu_imout->setText("PASS");
             immobilizer_result = "PASS";
+
         }
         else
         {
@@ -900,7 +1127,15 @@ void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的�
             bbutton->setStyleSheet("background-color: red; color: white;");
             ui->btn_vcu_imout->setText("FAIL");
             immobilizer_result = "FAIL";
+            overall_testing_result = false;
         }
+
+
+//////////////////////////////////////////////////////// ---------更新进度条&UI-----------/////////////////////////////////
+        ui->progressBar->setValue(90);//进度条
+        // 强制处理所有挂起的事件，确保UI更新
+        QApplication::processEvents();
+////////////////////////////////////////////////////////////---------更新进度条&UI-----------/////////////////////////////////
 
         for(int i = 1; i<16; i++)
         {
@@ -921,17 +1156,59 @@ void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的�
 
 
 
-   /////////////////////////////////////////////////////////////////////////////////////////////////////////
+      /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         //QPushButton* bbutton = ui->btn_bee; //显示是否打开了JIG,测试完就是提示请detach jig
         //bbutton->setStyleSheet("background-color: green; color: white;");
+
+
+        #ifdef ENGLISH
+        if(overall_testing_result == true)
         ui->btn_bee->setText("Please Detach...");
 
+        #endif
+
+        #ifdef CHINESE
+        if(overall_testing_result == true)
+        {
+        QPushButton* bbutton = ui->btn_bee; //显示是否提起了JIG
+        bbutton->setStyleSheet("background-color: green; color: white;");
+        ui->btn_bee->setText("测试成功，请释放板子，并取出");
+        }
 
 
+        else
+        {
+        QPushButton* bbutton = ui->btn_bee; //显示是否提起了JIG
+        bbutton->setStyleSheet("background-color: red; color: white;");
+        ui->btn_bee->setText("测试不通过，请释放板子，并取出");
+        }
+
+        #endif
+
+
+
+        ui->textEdit_Recv-> clear();
+
+
+        #ifdef ENGLISH
+        ui->textEdit_Recv-> setPlainText("Testing Done");
+
+        #endif
+
+        #ifdef CHINESE
+        ui->textEdit_Recv-> setPlainText("测试已完成");
+
+        #endif
+
+ //////////////////////////////////////////////////////// ---------更新进度条&UI-----------/////////////////////////////////
+        ui->progressBar->setValue(100);//进度条
+        // 强制处理所有挂起的事件，确保UI更新
+        QApplication::processEvents();
+ ////////////////////////////////////////////////////////////---------更新进度条&UI-----------/////////////////////////////////
 
         //detach前要给板子清空数据
-        ui->textEdit_Recv-> clear();
+
 
         //这一段是JLINK 烧录的代码
         // QString program = "C:/Program Files (x86)/SEGGER/JLink/JLink.exe";
@@ -941,8 +1218,6 @@ void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的�
         // QProcess process;
         // process.start(program, QStringList() << argument);
         // process.waitForFinished();
-
-        ui->textEdit_Recv-> setPlainText("Clear...");
 
     }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -962,8 +1237,16 @@ void Dialog::saveToCsv(const QString& imei)//void Dialog::saveToCsv(const QStrin
     if (file.size() == 0) {
         // 写入列标题
         out << ",,VOLTAGE PROBING,,,,,FUNCTION TESTING,,,,,,\n";
-        out << "Date,IMEI_number,4V7_BOOST,5V0,3V3_AWO,EBL,4V0_MODEM,3V3_ANT,SIM_MODEM,MOTION_SENSOR,NRF_FLASH,CAN_BUS,VCU_FLASH,IGNITION,IMMOBILIZER\n";
+        out << "Date,IMEI_number,4V7_BOOST,5V0,3V3_AWO,EBL,4V0_MODEM,3V3_ANT,SIM_MODEM,MOTION_SENSOR,NRF_FLASH,CAN_BUS,VCU_FLASH,IGNITION,IMMOBILIZER,OVERALL_RESULT\n";
     }
+
+
+    QString overall_testing_result_str = "#";
+    if(overall_testing_result == true)
+        overall_testing_result_str = "PASS";
+    else
+        overall_testing_result_str = "FAIL";
+
     /*
     float V_dcdcboost = 0;
     float V_fiveVzero = 0;
@@ -987,7 +1270,7 @@ void Dialog::saveToCsv(const QString& imei)//void Dialog::saveToCsv(const QStrin
 
     // 写入数据
 
-    out << currentDateTime  << "," << imei << "," << V_dcdcboost << "," << V_fiveVzero << ","<< V_AWO << ","<< V_EBL << ","<< V_MODEM<< ","<< V_ANT << ","<< modem_status_result << "," << motion_sensor_result<< ","<< nrf_qspi_flash_result << "," << canbus_result<< ","<< vcu_qspi_flash_result << ","<< igntion_result<< "," << immobilizer_result<< "\n";
+    out << currentDateTime  << "," << imei << "," << V_dcdcboost << "," << V_fiveVzero << ","<< V_AWO << ","<< V_EBL << ","<< V_MODEM<< ","<< V_ANT << ","<< modem_status_result << "," << motion_sensor_result<< ","<< nrf_qspi_flash_result << "," << canbus_result<< ","<< vcu_qspi_flash_result << ","<< igntion_result<< "," << immobilizer_result<< "," << overall_testing_result_str << "\n";
 
     file.close();
 }
@@ -1077,6 +1360,8 @@ void Dialog::on_btn_bee_clicked()
     ui->textEdit_Recv-> setPlainText("");//清除文字
     ui->textEdit_IMEI-> clear();//清除QT文字
 
+    ui->progressBar->setValue(0);//进度条
+
 }
 
 
@@ -1086,4 +1371,10 @@ void Dialog::on_btn_bee_clicked()
 
 
 
+
+
+void Dialog::on_btn_EBL_clicked()
+{
+
+}
 
