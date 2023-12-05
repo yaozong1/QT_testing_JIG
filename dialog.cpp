@@ -83,29 +83,44 @@ Dialog::Dialog(QWidget *parent)
     // 其他中文文本...
     #endif
 
+    ui->ble->setEnabled(false);//禁用self-test按钮
+    ui->btn_yellow->setEnabled(false);//初始化之前禁用测试按键
+    ui->textEdit_IMEI->setEnabled(false);//启用电压测试按键，等待工人进行下一轮测试
+
+
 ////////////////////////////////////////////////--------------设置UI的语言版本------------------------/////////////////////////////
 
-
+/*
     //识别系统的所有可用串口号，并添加到下拉列表中
     QList<QSerialPortInfo> serialPortInfo = QSerialPortInfo::availablePorts();
     int count = serialPortInfo.count();
     for(int i = 0;i < count;i++)
     {
-        //ui->Cboxport->addItem(serialPortInfo.at(i).portName());
+        //ui->Cboxport->addItem(serialPortInfo.at(i).portName());//老方法没有添加描述的
 
 
 
         QString portName = serialPortInfo.at(i).portName();
         QString description = serialPortInfo.at(i).description();
         ui->Cboxport->addItem(QString("%1(%2)").arg(portName, description));
+
+
     }
+
+ */
+
+
+    ui->Cboxport->addItem("COM9"); //上面注释的是获取端口号的，这里不获取了默认就为COM9
+
 
     //等待一个触发信号，接收串口数据
     connect(mSerialPort, SIGNAL(readyRead()), this, SLOT(on_SerialPort_readyRead()));
 
-
-
 }
+
+
+
+
 
 Dialog::~Dialog()
 {
@@ -128,9 +143,11 @@ bool Dialog::getSerialPortConfig()  //配置串口
 
     QString fullText = ui->Cboxport->currentText();  // 获取 "COM7(JLINK)"
     QStringList parts = fullText.split('(');  // 使用 '(' 分割字符串
+
     if(!parts.isEmpty()) {
         mPortName = parts.first();  // 取分割后的第一部分，即 "COM7"
     }
+
 
 
     mBaudRate = "9600";
@@ -194,9 +211,12 @@ bool Dialog::getSerialPortConfig()  //配置串口
         mSerialPort->setStopBits(QSerialPort::OneStop);
     }
     qDebug() << "配置";
+
     return mSerialPort->open(QSerialPort::ReadWrite);
 
 }
+
+
 void Dialog::on_btn_open_clicked()  //打开关闭按钮状态
 {
 
@@ -256,12 +276,21 @@ void Dialog::on_btn_open_clicked()  //打开关闭按钮状态
 #ifdef ENGLISH
             ui->textEdit_Recv-> setPlainText("DUT connected sucessfully, waiting for being tested......");
 
+            QPushButton* bbutton = ui->btn_bee; //提示需要复位之后才可以开始测试
+            bbutton->setStyleSheet("background-color: #403F3C; color: white;");
+            ui->btn_bee->setText("Please click to init...");
 #endif
 
 #ifdef CHINESE
             ui->textEdit_Recv-> setPlainText("设备连接成功，等待测试");
+            QPushButton* bbutton = ui->btn_bee;
+            bbutton->setStyleSheet("background-color: #403F3C; color: white;");
+            ui->btn_bee->setText("请单击，以初始化台架");
 
 #endif
+
+
+
 
         }
 
@@ -439,6 +468,8 @@ void Dialog::on_btn_yellow_clicked()
         bbutton->setText("");
 
         ui->progressBar->setValue(10);//进度条
+
+        ui->btn_yellow->setEnabled(false);//禁用电压测试按键，避免多次点击导致错误
 
 
 }
@@ -645,16 +676,27 @@ void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的�
            qDebug() << "电压测试失败";
 
 
+           ui->btn_yellow->setEnabled(false);//电压测试失败之后禁用测试按键，提示初始化
+
            #ifdef ENGLISH
-               ui->textEdit_Recv-> setPlainText("Voltage testing failed， please test it again or swap device");
+
+               ui->textEdit_Recv-> setPlainText("Voltage testing failed， please click & test again or swap device");
+               QPushButton* bbutton = ui->btn_bee; //提示需要复位之后才可以开始测试
+               ui->btn_bee->setText("Error, please click to init...");
+               bbutton->setStyleSheet("background-color: #403F3C; color: white;");
 
 
            #endif
 
            #ifdef CHINESE
 
-           ui->textEdit_Recv-> setPlainText("电压测试失败，请点击右下角按键后再次测试，或更换测试设备");
+               ui->textEdit_Recv-> setPlainText("电压测试失败，请点击右下角按键后再次测试，或更换测试设备");
+               QPushButton* bbutton = ui->btn_bee; //提示需要复位之后才可以开始测试
+               bbutton->setStyleSheet("background-color: #403F3C; color: white;");
+               ui->btn_bee->setText("失败，请单击，以初始化台架");
            #endif
+
+
 
            ui->progressBar->setValue(100);//进度条
 
@@ -1164,7 +1206,18 @@ void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的�
 
         #ifdef ENGLISH
         if(overall_testing_result == true)
-        ui->btn_bee->setText("Please Detach...");
+
+        {
+            QPushButton* bbutton = ui->btn_bee; //显示是否提起了JIG
+            bbutton->setStyleSheet("background-color: green; color: white;");
+            ui->btn_bee->setText("Tested successfully, please detach the device...");
+        }
+        else
+        {
+            QPushButton* bbutton = ui->btn_bee; //显示是否提起了JIG
+            bbutton->setStyleSheet("background-color: red; color: white;");
+            ui->btn_bee->setText("Tested failed, please detach the device..");
+        }
 
         #endif
 
@@ -1361,6 +1414,8 @@ void Dialog::on_btn_bee_clicked()
     ui->textEdit_IMEI-> clear();//清除QT文字
 
     ui->progressBar->setValue(0);//进度条
+
+    ui->btn_yellow->setEnabled(true);//启用电压测试按键，等待工人进行下一轮测试
 
 }
 

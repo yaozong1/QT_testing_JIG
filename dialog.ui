@@ -239,6 +239,9 @@
            <bold>true</bold>
           </font>
          </property>
+         <property name="currentText">
+          <string/>
+         </property>
         </widget>
        </item>
        <item>
