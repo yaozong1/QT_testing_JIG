@@ -110,7 +110,7 @@ Dialog::Dialog(QWidget *parent)
  */
 
 
-    ui->Cboxport->addItem("COM9"); //上面注释的是获取端口号的，这里不获取了默认就为COM9
+    ui->Cboxport->addItem("COM30"); //上面注释的是获取端口号的，这里不获取了默认就为COM9
 
 
     //等待一个触发信号，接收串口数据
@@ -284,7 +284,7 @@ void Dialog::on_btn_open_clicked()  //打开关闭按钮状态
 #ifdef CHINESE
             ui->textEdit_Recv-> setPlainText("设备连接成功，等待测试");
             QPushButton* bbutton = ui->btn_bee;
-            bbutton->setStyleSheet("background-color: #403F3C; color: white;");
+            bbutton->setStyleSheet("background-color: #09FFC0; color: black;");
             ui->btn_bee->setText("请单击，以初始化台架");
 
 #endif
@@ -601,7 +601,7 @@ void Dialog::Serial_data_operate(unsigned char *data, int length)//很重要的�
         // qDebug() << data[3];
         ui->btn_EBL->setText(QString::number(voltage_pin));
         bbutton = ui->btn_EBL; // Replace "myButton" with the object name of your QPushButton
-        if (voltage_pin >= 0.361 && voltage_pin <= 0.399)// 0.384V+-3%
+        if (voltage_pin >= 0.3677 && voltage_pin <= 0.4064)// 0.3870V+-5%
           bbutton->setStyleSheet("background-color: green; color: white;");
         else
 
