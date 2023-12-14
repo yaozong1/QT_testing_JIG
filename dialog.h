@@ -50,8 +50,9 @@ private slots:  //槽函数，遇到相应信号就触发
 
 
 
+    void on_usbSNsave_clicked();
 
-    void on_btn_EBL_clicked();
+    void loadUsbNumbers();
 
 private:
     Ui::Dialog *ui;

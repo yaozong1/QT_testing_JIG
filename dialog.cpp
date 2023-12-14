@@ -15,8 +15,8 @@
 
 
 
-//#define CHINESE
-#define ENGLISH
+#define CHINESE
+//#define ENGLISH
 
 
 
@@ -52,6 +52,8 @@ Dialog::Dialog(QWidget *parent)
 
     ui->setupUi(this);
 
+    loadUsbNumbers(); // 加载 USB 编号
+
     setWindowIcon(QIcon(":/TTC_NB.ico"));
 
     mSerialPort = new QSerialPort; //创建一个串口对象
@@ -67,6 +69,7 @@ Dialog::Dialog(QWidget *parent)
     ui->btn_open->setText("CONNECT");
     ui->btn_yellow->setText("Start Testing");
     ui->ble->setText("Self Test");
+    ui->usb1save->setText("Save");
     ui->label_4->setText("ROAM TEST JIG V1.0");
     ui->label->setText(" TEST _ JIG _ PORT");
     ui->label_11->setText("Status/Reset(click)");
@@ -77,6 +80,7 @@ Dialog::Dialog(QWidget *parent)
     ui->btn_open->setText("连接");
     ui->btn_yellow->setText("开始测试");
     ui->ble->setText("模块自测");
+    ui->usbSNsave->setText("保存");
     ui->label_4->setText("ROAM测试台架V1.0");
     ui->label->setText(" 测试端口号");
     ui->label_11->setText("状态/复位(点击)");
@@ -225,6 +229,7 @@ void Dialog::on_btn_open_clicked()  //打开关闭按钮状态
         //当前已经打开了串口，点击后将按钮更新为关闭状态
         mSerialPort->close();
 
+
 #ifdef ENGLISH
        ui->btn_open->setText("CONNECT");
 
@@ -238,6 +243,10 @@ void Dialog::on_btn_open_clicked()  //打开关闭按钮状态
         mIsOpen = false;
         //此时可以配置串口
         ui->Cboxport->setEnabled(true);
+        ui->usbSNsave->setEnabled(true);//关闭串口之后允许更改usb SN
+
+
+
     //    ui->Cboxboudrate->setEnabled(true);
     //    ui->Cboxparity->setEnabled(true);
     //    ui->Cboxdatabits->setEnabled(true);
@@ -245,6 +254,11 @@ void Dialog::on_btn_open_clicked()  //打开关闭按钮状态
     //    ui->btn_send->setEnabled(mIsOpen);
         ui->textEdit_Recv-> setPlainText("");
         qDebug() << "关闭";
+
+        QPushButton* bbutton = ui->btn_bee; // 清空右下角按键提示数据
+        bbutton->setStyleSheet("");
+        bbutton->setText("");
+
      //   ui->textEdit_Recv-> setPlainText("正在进行测试当中.......请稍等........");
 
     }
@@ -268,6 +282,9 @@ void Dialog::on_btn_open_clicked()  //打开关闭按钮状态
 
             qDebug() << "成功打开串口" << mPortName;
             ui->Cboxport->setEnabled(false);
+
+            ui->usbSNsave->setEnabled(false);//打开串口之后禁用更改usb SN
+
          //   ui->Cboxboudrate->setEnabled(false);
          //   ui->Cboxparity->setEnabled(false);
          //   ui->Cboxdatabits->setEnabled(false);
@@ -1423,13 +1440,114 @@ void Dialog::on_btn_bee_clicked()
 
 
 
+void Dialog::on_usbSNsave_clicked() {
+
+    ////////////////////-------------------------------fw_loading------------------------------------//////////
+
+    QFile file("../ihex/fw_loading.txt");
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+        return;
+
+    QTextStream in(&file);
+    QStringList fileContent;
+    int usbLineCount = 0;  // 用于跟踪“usb”行的数量
+
+    while (!in.atEnd()) {
+        QString line = in.readLine();//这个是逐行读取，里面自带自动的index，所以不需要管实现的方式
+        if (line.startsWith("usb")) {
+        usbLineCount++;
+        // 根据 usb 行的数量替换内容
+        line = "usb " + (usbLineCount == 1 ? ui->lineEditUsb1->text() : ui->lineEditUsb2->text()); //读取到usb这一行之后，就按照表格中填写的替换那一行，如果usbLineCount等于1代表第一行，等于2代表第二行，逐行操作
+
+        }
+        fileContent << line;//逐行写到fileContent里面，之后可以重新根据修改的值，重新写到txt当中，后续的foreach就是这个作用
+
+        //fileContent 是一个 QStringList，它本质上是一个字符串列表，其中每个元素代表文件中的一行。当您使用 QTextStream::readLine()
+        //读取文件时，它会从文件中读取一行文本，但不包括该行末尾的换行符。因此，当这些行被存储到 fileContent 中时，它们是没有换行符的。
+        //如果上面的变成fileContent << line << "\n"，就会导致回写的时候，换行变得特别特别多
+        //回写到txt当中的时候手动添加就可以了，比如后面的out << line << "\n";
+    }
+    file.close();
+
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+        return;
+
+    QTextStream out(&file);
+    foreach (const QString &line, fileContent) {
+        out << line << "\n";
+    }
+    file.close();
+
+
+   ////////////////////-------------------------------command_vol------------------------------------//////////
+
+   //对第二个txt进行修改
+   QFile file2("../ihex/command_vol.txt");
+    if (!file2.open(QIODevice::ReadOnly | QIODevice::Text))
+        return;
+
+    QTextStream in2(&file2);
+    QStringList fileContent2;
+
+    while (!in2.atEnd()) {
+        QString line = in2.readLine();
+        if (line.startsWith("usb")) {
+
+        // 根据 usb 行的数量替换内容
+        line = "usb " + ui->lineEditUsb1->text();
+
+        }
+        fileContent2 << line;
+    }
+    file2.close();
+
+    if (!file2.open(QIODevice::WriteOnly | QIODevice::Text))
+        return;
+
+    QTextStream out2(&file2);
+    foreach (const QString &line, fileContent2) {
+        out2 << line << "\n";
+    }
+    file2.close();
+
+
+#ifdef ENGLISH
+    ui->textEdit_Recv-> setPlainText("Changed JLINK SN");
+    qDebug() << "Changed JLINK SN";
+#endif
+
+#ifdef CHINESE
+    ui->textEdit_Recv-> setPlainText("更改SN完毕");
+    qDebug() << "更改SN完毕";
+
+#endif
 
 
 
-
-
-void Dialog::on_btn_EBL_clicked()
-{
 
 }
 
+
+
+
+void Dialog::loadUsbNumbers() {
+    QFile file("../ihex/fw_loading.txt"); // 替换为您的文件路径
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+        return;
+
+    QTextStream in(&file);
+    QStringList usbLines;
+    QString line;
+    while (!in.atEnd()) {
+        line = in.readLine();
+        if (line.startsWith("usb")) {
+        usbLines.append(line);
+        }
+    }
+    file.close();
+
+    if (usbLines.size() > 0)
+        ui->lineEditUsb1->setText(usbLines[0].section(' ', 1, 1));
+    if (usbLines.size() > 1)
+        ui->lineEditUsb2->setText(usbLines[1].section(' ', 1, 1));
+}
