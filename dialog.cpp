@@ -15,8 +15,8 @@
 
 
 
-#define CHINESE
-//#define ENGLISH
+//#define CHINESE
+#define ENGLISH
 
 
 
@@ -277,7 +277,7 @@ void Dialog::on_btn_open_clicked()  //打开关闭按钮状态
             ui->textEdit_Recv-> setPlainText("DUT connected sucessfully, waiting for being tested......");
 
             QPushButton* bbutton = ui->btn_bee; //提示需要复位之后才可以开始测试
-            bbutton->setStyleSheet("background-color: #403F3C; color: white;");
+            bbutton->setStyleSheet("background-color: #09FFC0; color: white;");
             ui->btn_bee->setText("Please click to init...");
 #endif
 
