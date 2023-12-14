@@ -14,9 +14,8 @@
 #include <QDate>
 
 
-
-#define CHINESE
-//#define ENGLISH
+//#define CHINESE
+#define ENGLISH
 
 
 
@@ -69,7 +68,7 @@ Dialog::Dialog(QWidget *parent)
     ui->btn_open->setText("CONNECT");
     ui->btn_yellow->setText("Start Testing");
     ui->ble->setText("Self Test");
-    ui->usb1save->setText("Save");
+    ui->usbSNsave->setText("Save");
     ui->label_4->setText("ROAM TEST JIG V1.0");
     ui->label->setText(" TEST _ JIG _ PORT");
     ui->label_11->setText("Status/Reset(click)");
